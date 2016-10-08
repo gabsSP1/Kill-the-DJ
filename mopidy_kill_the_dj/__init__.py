@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class Extension(ext.Extension):
 
     dist_name = 'Mopidy-KTD'
-    ext_name = 'Kill-the-DJ'
+    ext_name = 'kill_the_dj'
     version = __version__
 
     def get_default_config(self):

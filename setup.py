@@ -13,7 +13,7 @@ def get_version(filename):
 
 setup(
     name='Mopidy-KTD',
-    version=get_version('mopidy_Kill-the-DJ/__init__.py'),
+    version=get_version('mopidy_kill_the_dj/__init__.py'),
     url='https://github.com/gabsSP1/Kill-the-DJ',
     license='Apache License, Version 2.0',
     author='Fredrik Fagerholm',

@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from mopidy_Kill-the-DJ import Extension, frontend as frontend_lib
+from mopidy_kill_the_dj import Extension, frontend as frontend_lib
 
 
 def test_get_default_config():
