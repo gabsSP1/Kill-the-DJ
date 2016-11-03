@@ -12,13 +12,13 @@ def get_version(filename):
 
 
 setup(
-    name='Mopidy-KTD',
-    version=get_version('mopidy_kill_the_dj/__init__.py'),
-    url='https://github.com/gabsSP1/Kill-the-DJ',
+    name='Mopidy-KillTheDJ',
+    version=get_version('mopidy_killthedj/__init__.py'),
+    url='https://github.com/gabsSP1/mopidy-killthedj',
     license='Apache License, Version 2.0',
-    author='Fredrik Fagerholm',
-    author_email='fagerholm.fredrik@gmail.com',
-    description='Mopidy extension for playlist management with voting system',
+    author='Gabriel SPECQ',
+    author_email='gabriel.specq@gmail.com',
+    description='Mopidy voting system playlist',
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests', 'tests.*']),
     zip_safe=False,
@@ -30,7 +30,7 @@ setup(
     ],
     entry_points={
         'mopidy.ext': [
-            'Kill-the-DJ = mopidy_Kill-the-DJ:Extension',
+            'killthedj = mopidy_killthedj:Extension',
         ],
     },
     classifiers=[
