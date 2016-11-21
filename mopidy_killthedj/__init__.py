@@ -28,7 +28,7 @@ class MainRequestHandler(tornado.web.RequestHandler):
 class TestHandler(tornado.web.RequestHandler):
     def get(self):
         self.write(
-            'Test blabla bla ishan url' )
+            'Test blabla lalalala bla ishan url' )
 
 
 def my_app_factory(config, core):
