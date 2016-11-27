@@ -2,12 +2,10 @@ from __future__ import unicode_literals
 
 import logging
 import os
-
+from RequestHandlers import *
 from mopidy import config, ext
 
-import tornado.web
 
-import tornado.web
 
 __version__ = '0.1.0'
 
@@ -16,25 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 
-class MainRequestHandler(tornado.web.RequestHandler):
-    def initialize(self, core):
-        self.core = core
 
-    def get(self):
-        self.write(
-            'Hello, world! This is Mopidy %s' %
-            self.core.get_version().get())
-
-class TestHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.write(
-            'Test blabla bla gabriel url' )
 
 
 def my_app_factory(config, core):
     return [
-        ('/', MainRequestHandler, {'core': core}),
-        ('/test', TestHandler)
+        ('/', CreateOrJoinSession, {'core': core}),
+        ('/createSession', CreateSession),
+        ('/joinSession', JoinSession),
+        ('/getUsers', GetAllUsers)
 ]
 
 class Extension(ext.Extension):
