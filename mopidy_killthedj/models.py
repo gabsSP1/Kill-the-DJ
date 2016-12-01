@@ -53,7 +53,7 @@ class Tracklist(object):
         Add a new song or update the vote count of an existing song
         """
         if track_uri in self.entry_finder:
-            self.remove_song(track_uri)
+            self.remove_track(track_uri)
         count = next(self.counter)
 
         track = Track(track_uri)
@@ -65,8 +65,11 @@ class Tracklist(object):
         """
         Remove a track from the tracklist. Raise KeyError if not found.
         """
-        entry = self.entry_finder.pop(track_uri)
-        entry[0] = None
+        if track_uri in self.entry_finder:
+            entry = self.entry_finder.pop(track_uri)
+            entry[0] = None
+        else:
+            raise KeyError('Track not in tracklist')
 
     def set_track_votes(self, track_uri, votes=0):
         """
@@ -75,3 +78,15 @@ class Tracklist(object):
         if track_uri in self.entry_finder:
             entry = self.entry_finder[track_uri]
             entry[0].set_votes(votes)
+        else:
+            raise KeyError('Track not in tracklist')
+
+    def get_track_votes(self, track_uri):
+        """
+        Get the vote count for a track in the tracklist
+        """
+        if track_uri in self.entry_finder:
+            entry = self.entry_finder[track_uri]
+            entry[0].get_votes()
+        else:
+            raise KeyError('Track not in tracklist')
