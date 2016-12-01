@@ -48,7 +48,7 @@ class Tracklist(object):
         tl_copy = list(self.tracklist)
         self.core.tracklist.add(uris=[heappop(tl_copy).track_uri for _ in range(len(tl_copy))])
 
-    def add_song(self, track_uri):
+    def add_track(self, track_uri):
         """
         Add a new song or update the vote count of an existing song
         """
@@ -59,7 +59,8 @@ class Tracklist(object):
         track = Track(track_uri)
         entry = [track, count]
         self.entry_finder[track_uri] = entry
-        heappush(self.playlist, entry)
+        heappush(self.tracklist, entry)
+        self.core.tracklist.add(uri=track_uri)
 
     def remove_track(self, track_uri):
         """
@@ -68,6 +69,7 @@ class Tracklist(object):
         if track_uri in self.entry_finder:
             entry = self.entry_finder.pop(track_uri)
             entry[0] = None
+            self.core.tracklist.remove({'uri': [track_uri]})
         else:
             raise KeyError('Track not in tracklist')
 
