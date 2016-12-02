@@ -6,24 +6,30 @@ from RequestHandlers import *
 from mopidy import config, ext
 
 
-
 __version__ = '0.1.0'
 
 # TODO: If you need to log, use loggers named after the current Python module
 logger = logging.getLogger(__name__)
 
 
-
-
-
-
 def my_app_factory(config, core):
     return [
         ('/', CreateOrJoinSession, {'core': core}),
-        ('/createSession', CreateSession),
+        ('/createSession', CreateSession, {'core': core}),
         ('/joinSession', JoinSession),
         ('/getUsers', GetAllUsers)
-]
+    ]
+
+
+def tracklist_api(config, core):
+    return [
+        (r'/', IndexHandler, {'version': __version__, 'core': core}),
+        (r'/tracklist', TracklistHandler, {'core': core}),
+        (r'/track', TrackHandler, {'core': core}),
+        (r'/vote', VoteHandler, {'core': core}),
+        (r'/search', SearchHandler, {'core': core}),
+    ]
+
 
 class Extension(ext.Extension):
 
@@ -37,13 +43,16 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
-        # TODO: Comment in and edit, or remove entirely
-        #schema['username'] = config.String()
-        #schema['password'] = config.Secret()
         return schema
 
     def setup(self, registry):
         registry.add('http:app', {
             'name': self.ext_name,
             'factory': my_app_factory,
+        })
+
+        # HTTP api for tracklist management and voting
+        registry.add('http:app', {
+            'name': self.ext_name,
+            'factory': tracklist_api,
         })

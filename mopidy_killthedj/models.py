@@ -29,7 +29,6 @@ class Tracklist(object):
     """
     Tracklist works as following:
     Track with the most votes goes first. After that the track with one vote less.
-    If the next track has the same number of votes, the track where the newest vote is the oldest overall wins.
     """
     def __init__(self, core):
         self.core = core
@@ -46,7 +45,7 @@ class Tracklist(object):
         self.core.tracklist.clear()
         # We copy the tracklist to avoid modifying it
         tl_copy = list(self.tracklist)
-        self.core.tracklist.add(uris=[heappop(tl_copy).track_uri for _ in range(len(tl_copy))])
+        self.core.tracklist.add(uris=[heappop(tl_copy)[0].track_uri for _ in range(len(tl_copy))])
 
     def add_track(self, track_uri):
         """
@@ -89,6 +88,6 @@ class Tracklist(object):
         """
         if track_uri in self.entry_finder:
             entry = self.entry_finder[track_uri]
-            entry[0].get_votes()
+            return entry[0].get_votes()
         else:
             raise KeyError('Track not in tracklist')
