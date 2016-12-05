@@ -24,7 +24,7 @@
                 "tags": [
                     "Tracks"
                 ],
-                "description": "Search the library for tracks where ``field`` contains ``values``.\n``field`` can be one of ``uri``, ``track_name``, ``album``, ``artist``,\n``albumartist``, ``composer``, ``performer``, ``track_no``, ``genre``,\n``date``, ``comment`` or ``any``.\n\nIf ``uris`` is given, the search is limited to results from within the\nURI roots. For example passing ``{\"uris\": [\"file:\"]`` will limit the search\nto the local backend.\n\n### Attributes\n- `query` – one or more queries to search for  \n- `uris` (list of string or None) – zero or more URI roots to limit the search to  \n- `exact` (bool) – if the search should use exact matching\n\n### Examples\n\n- Returns results matching 'a' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\"]\n  }\n}\n```\n\n- Returns results matching artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' and 'b' and artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\", \"b\"],\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' if within the given URI roots\n\"file:///media/music\" and \"spotify:\":  \n\n`{'any': ['a']}, }`\n```json\n{\n  \"query\": {\n    \"any\": [\"a\"],\n    \"artist\": [\"xyz\"]\n  },\n  \"uris\": [\"file:///media/music\", \"spotify:\"]\n}\n```\n\n- Returns results matching artist 'xyz' and 'abc' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\", \"abc\"]\n  },\n}\n```\n\n## Success\nA successful request has returns an array of serach results, with status code `201`. Every item in the array is a json representation of a [mopidy data model](https://docs.mopidy.com/en/latest/api/models/#module-mopidy.models), e.g. `Track`, `Artist`, `Album` etc.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message. For example a malformed search request.\n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "Search the library for tracks where ``query`` contains attributes ``uri``, ``track_name``, ``album``, ``artist``,\n``albumartist``, ``composer``, ``performer``, ``track_no``, ``genre``,\n``date``, ``comment`` or ``any``. Any of the query attributes is an array of strings, where the string items are the strings for which that attributes is matched against in the backend. \n\nIf ``uris`` is given, the search is limited to results from within the\nURI roots. For example passing ``{\"uris\": [\"file:\"]}`` will limit the search\nto the local backend.\n\n### Attributes\n- `query` – one or more queries to search for  \n- `uris` (list of string or None) – zero or more URI roots to limit the search to  \n- `exact` (bool) – if the search should use exact matching\n\n### Examples\n\n- Returns results matching 'a' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\"]\n  }\n}\n```\n\n- Returns results matching artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' and 'b' and artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\", \"b\"],\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' if within the given URI roots\n\"file:///media/music\" and \"spotify:\":  \n\n`{'any': ['a']}, }`\n```json\n{\n  \"query\": {\n    \"any\": [\"a\"],\n    \"artist\": [\"xyz\"]\n  },\n  \"uris\": [\"file:///media/music\", \"spotify:\"]\n}\n```\n\n- Returns results matching artist 'xyz' and 'abc' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\", \"abc\"]\n  },\n}\n```\n\n## Success\nA successful request has returns an array of serach results, with status code `201`. Every item in the array is a json representation of a [mopidy data model](https://docs.mopidy.com/en/latest/api/models/#module-mopidy.models), e.g. `Track`, `Artist`, `Album` etc.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message. For example a malformed search request.\n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -119,78 +119,65 @@
                                     "type": "boolean"
                                 }
                             },
-                            "required": [
-                                "query",
-                                "uris",
-                                "exact"
-                            ],
                             "example": {
                                 "query": {
                                     "uri": [
-                                        "ut Ut reprehenderit"
+                                        "sit Duis est",
+                                        "consequat veniam reprehenderit mo"
                                     ],
                                     "track_name": [
-                                        "irure labore enim",
-                                        "sunt quis",
-                                        "id sint aliqua"
+                                        "do culpa exercitation ipsum eiusmod",
+                                        "occaecat sint",
+                                        "sunt dolore elit eiusmod sint"
                                     ],
                                     "album": [
-                                        "sit incididunt"
+                                        "sint et id laborum"
                                     ],
                                     "artist": [
-                                        "laboris",
-                                        "in eu tempor veniam sit",
-                                        "in ex et"
+                                        "amet reprehenderit",
+                                        "et commodo sed"
                                     ],
                                     "albumartist": [
-                                        "ullamco dolore in ad et",
-                                        "ve",
-                                        "esse",
-                                        "ex",
-                                        "aliqua cillum eu"
+                                        "est veniam",
+                                        "magna ea",
+                                        "pr"
                                     ],
                                     "composer": [
-                                        "ut"
+                                        "sunt minim cupidatat adipisi",
+                                        "voluptate"
                                     ],
                                     "performer": [
-                                        "dolor occaecat non aute",
-                                        "commodo sunt",
-                                        "cillum",
-                                        "adipisicing ad",
-                                        "occaecat est adipisicing Du"
+                                        "culpa ad laboris"
                                     ],
                                     "track_no": [
-                                        "aliqua eu proident",
-                                        "incididunt in dolor ipsum deserunt",
-                                        "laborum",
-                                        "et",
-                                        "esse dolor"
+                                        "occaeca"
                                     ],
                                     "genre": [
-                                        "et eiusmod elit",
-                                        "incididunt",
-                                        "mollit proident tempor",
-                                        "deseru",
-                                        "commodo ut pariatur nostrud do"
+                                        "irure ",
+                                        "proident mollit",
+                                        "aliquip sint ullamco",
+                                        "mollit velit in",
+                                        "dolor amet labore irure est"
                                     ],
                                     "date": [
-                                        "Ut id in",
-                                        "eu dolore fugiat"
+                                        "commodo ve"
                                     ],
                                     "comment": [
-                                        "nisi laboris laborum consectetur",
-                                        "cillum"
+                                        "nulla quis",
+                                        "Duis commodo con",
+                                        "do est Lorem laborum",
+                                        "Excepteur aliqua proident eiusmod",
+                                        "culpa laboris non aliquip nulla"
                                     ],
                                     "any": [
-                                        "qui non"
+                                        "et ea labore",
+                                        "nisi",
+                                        "magna non nisi eu amet"
                                     ]
                                 },
                                 "uris": [
-                                    "deserunt Excepteur quis",
-                                    "et sunt est in",
-                                    "reprehenderit ut officia",
-                                    "ex eiusmod",
-                                    "magna dolore ut et anim"
+                                    "a",
+                                    "consequat"
                                 ],
                                 "exact": false
                             }
