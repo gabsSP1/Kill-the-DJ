@@ -24,7 +24,7 @@
                 "tags": [
                     "Tracks"
                 ],
-                "description": "Search the library for tracks where ``field`` contains ``values``.\n``field`` can be one of ``uri``, ``track_name``, ``album``, ``artist``,\n``albumartist``, ``composer``, ``performer``, ``track_no``, ``genre``,\n``date``, ``comment`` or ``any``.\n\nIf ``uris`` is given, the search is limited to results from within the\nURI roots. For example passing ``{\"uris\": [\"file:\"]`` will limit the search\nto the local backend.\n\n### Examples\n\n- Returns results matching 'a' in any backend:  \n`{'any': ['a']}`\n\n- Returns results matching artist 'xyz' in any backend:  \n`{'artist': ['xyz']}`\n\n- Returns results matching 'a' and 'b' and artist 'xyz' in any backend:  \n`{'any': ['a', 'b'], 'artist': ['xyz']}`\n\n- Returns results matching 'a' if within the given URI roots\n\"file:///media/music\" and \"spotify:\":  \n\n`{'any': ['a']}, uris=['file:///media/music', 'spotify:']}`\n\n- Returns results matching artist 'xyz' and 'abc' in any backend:  \n`{'artist': ['xyz', 'abc']}`\n\n## Success\n\n## Errors\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "Search the library for tracks where ``field`` contains ``values``.\n``field`` can be one of ``uri``, ``track_name``, ``album``, ``artist``,\n``albumartist``, ``composer``, ``performer``, ``track_no``, ``genre``,\n``date``, ``comment`` or ``any``.\n\nIf ``uris`` is given, the search is limited to results from within the\nURI roots. For example passing ``{\"uris\": [\"file:\"]`` will limit the search\nto the local backend.\n\n### Attributes\n- `query` – one or more queries to search for  \n- `uris` (list of string or None) – zero or more URI roots to limit the search to  \n- `exact` (bool) – if the search should use exact matching\n\n### Examples\n\n- Returns results matching 'a' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\"]\n  }\n}\n```\n\n- Returns results matching artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' and 'b' and artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\", \"b\"],\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' if within the given URI roots\n\"file:///media/music\" and \"spotify:\":  \n\n`{'any': ['a']}, }`\n```json\n{\n  \"query\": {\n    \"any\": [\"a\"],\n    \"artist\": [\"xyz\"]\n  },\n  \"uris\": [\"file:///media/music\", \"spotify:\"]\n}\n```\n\n- Returns results matching artist 'xyz' and 'abc' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\", \"abc\"]\n  },\n}\n```\n\n## Success\nA successful request has returns an array of serach results, with status code `201`. Every item in the array is a json representation of a [mopidy data model](https://docs.mopidy.com/en/latest/api/models/#module-mopidy.models), e.g. `Track`, `Artist`, `Album` etc.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message. For example a malformed search request.\n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -35,34 +35,79 @@
                                 "query": {
                                     "type": "object",
                                     "properties": {
-                                        "field": {
-                                            "type": "string",
-                                            "enum": [
-                                                "uri",
-                                                "track_name",
-                                                "album",
-                                                "artist",
-                                                "albumartist",
-                                                "composer",
-                                                "performer",
-                                                "track_no",
-                                                "genre",
-                                                "date",
-                                                "comment",
-                                                "any"
-                                            ]
+                                        "uri": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         },
-                                        "values": {
+                                        "track_name": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "album": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "artist": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "albumartist": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "composer": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "performer": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "track_no": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "genre": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "date": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "comment": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "any": {
                                             "type": "array",
                                             "items": {
                                                 "type": "string"
                                             }
                                         }
-                                    },
-                                    "required": [
-                                        "field",
-                                        "values"
-                                    ]
+                                    }
                                 },
                                 "uris": {
                                     "type": "array",
@@ -81,27 +126,79 @@
                             ],
                             "example": {
                                 "query": {
-                                    "field": "date",
-                                    "values": [
-                                        "id voluptate",
-                                        "ut",
-                                        "irure eu",
-                                        "Duis consectetur"
+                                    "uri": [
+                                        "ut Ut reprehenderit"
+                                    ],
+                                    "track_name": [
+                                        "irure labore enim",
+                                        "sunt quis",
+                                        "id sint aliqua"
+                                    ],
+                                    "album": [
+                                        "sit incididunt"
+                                    ],
+                                    "artist": [
+                                        "laboris",
+                                        "in eu tempor veniam sit",
+                                        "in ex et"
+                                    ],
+                                    "albumartist": [
+                                        "ullamco dolore in ad et",
+                                        "ve",
+                                        "esse",
+                                        "ex",
+                                        "aliqua cillum eu"
+                                    ],
+                                    "composer": [
+                                        "ut"
+                                    ],
+                                    "performer": [
+                                        "dolor occaecat non aute",
+                                        "commodo sunt",
+                                        "cillum",
+                                        "adipisicing ad",
+                                        "occaecat est adipisicing Du"
+                                    ],
+                                    "track_no": [
+                                        "aliqua eu proident",
+                                        "incididunt in dolor ipsum deserunt",
+                                        "laborum",
+                                        "et",
+                                        "esse dolor"
+                                    ],
+                                    "genre": [
+                                        "et eiusmod elit",
+                                        "incididunt",
+                                        "mollit proident tempor",
+                                        "deseru",
+                                        "commodo ut pariatur nostrud do"
+                                    ],
+                                    "date": [
+                                        "Ut id in",
+                                        "eu dolore fugiat"
+                                    ],
+                                    "comment": [
+                                        "nisi laboris laborum consectetur",
+                                        "cillum"
+                                    ],
+                                    "any": [
+                                        "qui non"
                                     ]
                                 },
                                 "uris": [
-                                    "fugiat",
-                                    "proident Ut irure ullamco",
-                                    "deserunt adipisicing",
-                                    "elit irure"
+                                    "deserunt Excepteur quis",
+                                    "et sunt est in",
+                                    "reprehenderit ut officia",
+                                    "ex eiusmod",
+                                    "magna dolore ut et anim"
                                 ],
-                                "exact": true
+                                "exact": false
                             }
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "",
                         "schema": {
                             "type": "object",
@@ -436,7 +533,7 @@
                 "tags": [
                     "Tracks"
                 ],
-                "description": "# Get information about a track\n\nGet information about a track by sending its ([mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) as a query parameter, example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.\n\n## Success\nIf the track was found in the library the response status code is `200`. A representation of the track is returned in the response body.\n\n## Error\nIf the track was not found in the library the response status code is `404`, and the body contains an error message.\nFor other errors the response status code is `400`, and the body contains an error message.\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Get information about a track\n\nGet information about a track by sending its ([mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) as a query parameter, example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.\n\n## Success\nIf the track was found in the library the response status code is `200`. A representation of the track is returned in the response body.\n\n## Error\nIf the track was not found in the library the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "uri",
@@ -586,7 +683,7 @@
                 "tags": [
                     "Session"
                 ],
-                "description": "# Add a user to the session\n\nA user is identified by its **unique** username. The username for the user to be added to the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\n\n\n## Errors\nIf the username is invalid or an user with that username already exists in the session, a response will have the error code 400 and an error message in the body",
+                "description": "# Add a user to the session\n\nA user is identified by its **unique** username. The username for the user to be added to the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\n\n\n## Errors\nIf the username is invalid or an user with that username already exists in the session, a response will have the error code `400` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -702,7 +799,7 @@
                 "tags": [
                     "Session"
                 ],
-                "description": "# Remove a user from the session\n\nA user is identified by its **unique** username. The username for the user to be removed from the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\n\n\n## Errors\nIf an user with that username does not exists in the session, a response will have the error code 404 and an error message in the body.\n\nFor errors in the backend the response will have the error code 500 and an error message in the body.",
+                "description": "# Remove a user from the session\n\nA user is identified by its **unique** username. The username for the user to be removed from the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\n\n\n## Errors\nIf an user with that username does not exists in the session, a response will have the error code `404` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -764,7 +861,7 @@
                 "tags": [
                     "Session"
                 ],
-                "description": "# Create a new session\n\nCreate a new session with the given title.\nEach session must have an admin user. \n\nThe sessoin title and username for the admin is specified in the attributes `session_name` and `admin_username` in the json body of the request.\n\nOnly one session can be run on the device. If there already is a session the response will have status code `400` and an error message in the body.",
+                "description": "# Create a new session\n\nCreate a new session with the given title.\nEach session must have an admin user. \n\nThe sessoin title and username for the admin is specified in the attributes `session_name` and `admin_username` in the json body of the request.\n\n## Errors\nOnly one session can be run on the device. If there already is a session the response will have status code `400` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -837,7 +934,7 @@
                 "tags": [
                     "Tracklist"
                 ],
-                "description": "# Add a track to the tracklist\nA track is identified by its track uri ([mopidy uris](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) are unique identifiers used by the mopidy backend and backend extensions), example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.  \n\nThe track uri for the track to be added is specified in the query parameter **uri**.\n\n## Success\nIf the track was successfully added to the tracklist the response status code is `200`. A representation of the track is returned in the response body.\n\n\n## Errors\nIf the track to be added was not found the response status code is `404`, and the body contains an error message.\nFor other errors the response status code is `400`, and the body contains an error message.",
+                "description": "# Add a track to the tracklist\nA track is identified by its track uri ([mopidy uris](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) are unique identifiers used by the mopidy backend and backend extensions), example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.  \n\nThe track uri for the track to be added is specified in the query parameter **uri**.\n\n## Success\nIf the track was successfully added to the tracklist the response status code is `200`. A representation of the track is returned in the response body.\n\n\n## Errors\nIf the track to be added was not found the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "uri",
@@ -1019,7 +1116,7 @@
                 "tags": [
                     "Tracklist"
                 ],
-                "description": "# Remove a track from the tracklist\nA track is identified by its track uri ([mopidy uris](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) are unique identifiers used by the mopidy backend and backend extensions), example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.  \n\nThe track uri for the track to be deleted is specified in the query parameter **uri**.\n\n## Success\nIf the track was successfully removed from the tracklist the response status code is `200`. A representation of the track is returned in the response body.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Remove a track from the tracklist\nA track is identified by its track uri ([mopidy uris](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) are unique identifiers used by the mopidy backend and backend extensions), example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.  \n\nThe track uri for the track to be deleted is specified in the query parameter **uri**.\n\n## Success\nIf the track was successfully removed from the tracklist the response status code is `200`. A representation of the track is returned in the response body.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "uri",
@@ -1168,7 +1265,7 @@
                 "tags": [
                     "Tracklist"
                 ],
-                "description": "# Get tracklist\nGet a list of tracks currently in the tracklist\n\n\n## Success\nWith a successfull request the response status code is `200`. A representation of the tracklist is returned in the response body. \n\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Get tracklist\nGet a list of tracks currently in the tracklist\n\n\n## Success\nWith a successfull request the response status code is `200`. A representation of the tracklist is returned in the response body. \n\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "uri",
@@ -1419,7 +1516,7 @@
                 "tags": [
                     "Tracklist"
                 ],
-                "description": "# Increase vote count\n\nIncrease the vote count for a track in the tracklist. The track for which to increase the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a query parameter.\n\nThe vote count is increased by one for each request.\n\n## Success\nThe tracks vote count was increased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`.\nFor client errors the response status code is `400`, and the body contains an error message.\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Increase vote count\n\nIncrease the vote count for a track in the tracklist. The track for which to increase the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a query parameter.\n\nThe vote count is increased by one for each request.\n\n## Success\nThe tracks vote count was increased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "uri",
