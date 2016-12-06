@@ -7,7 +7,23 @@ from Services import *
 services = Services()
 
 
-class IndexHandler(tornado.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
+    """
+    Base class for for API endpoint request handlers.
+    Sets headers for CORS.
+    All other request handlers should extend this class
+    """
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
+
+    def options(self):
+        self.set_status(204)
+        self.finish()
+
+
+class IndexHandler(BaseHandler):
     def initialize(self, version, core):
         self.core = core
         self.version = version
@@ -17,7 +33,7 @@ class IndexHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
 
 
-class SessionHandler(tornado.web.RequestHandler):
+class SessionHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
 
@@ -30,7 +46,7 @@ class SessionHandler(tornado.web.RequestHandler):
 
 
 
-class UsersHandler(tornado.web.RequestHandler):
+class UsersHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
     def post(self):
@@ -41,13 +57,11 @@ class UsersHandler(tornado.web.RequestHandler):
             json.dumps(services.get_all_users(), default=jdefault))
 
 
-
-
 def jdefault(o):
     return o.__dict__
 
 
-class TracklistHandler(tornado.web.RequestHandler):
+class TracklistHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
 
@@ -86,7 +100,7 @@ class TracklistHandler(tornado.web.RequestHandler):
             self.set_status(400)
 
 
-class TrackHandler(tornado.web.RequestHandler):
+class TrackHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
 
@@ -104,7 +118,7 @@ class TrackHandler(tornado.web.RequestHandler):
             self.set_status(400)
 
 
-class SearchHandler(tornado.web.RequestHandler):
+class SearchHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
 
@@ -145,7 +159,7 @@ class SearchHandler(tornado.web.RequestHandler):
                 json.dumps(search_result.tracks, cls=ModelJSONEncoder)))
 
 
-class VoteHandler(tornado.web.RequestHandler):
+class VoteHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
 
