@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 def my_app_factory(config, core):
     return [
-        ('/session/users', SessionHandler, {'core': core}),
-        ('/users', UsersHandler, {'core': core}),
+        ('/session', SessionHandler, {'core': core}),
+        ('session/users', UsersHandler, {'core': core}),
 
     ]
 
