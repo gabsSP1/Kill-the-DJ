@@ -17,34 +17,30 @@ class IndexHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
 
 
-class CreateOrJoinSession(tornado.web.RequestHandler):
+class SessionHandler(tornado.web.RequestHandler):
     def initialize(self, core):
         self.core = core
 
     def get(self):
         self.write(
-            json.dumps(services.sessionCreated()))
-
-
-class CreateSession(tornado.web.RequestHandler):
-    def initialize(self, core):
-        self.core = core
-
+            json.dumps({"active" : services.sessionCreated()}))
     def post(self):
         data = json.loads(self.request.body)
         self.write(json.dumps(services.createSession(data, core=self.core)))
 
 
-class JoinSession(tornado.web.RequestHandler):
+
+class UsersHandler(tornado.web.RequestHandler):
+    def initialize(self, core):
+        self.core = core
     def post(self):
         data = json.loads(self.request.body)
         self.write(json.dumps(services.joinSession(data)))
-
-
-class GetAllUsers(tornado.web.RequestHandler):
     def get(self):
         self.write(
             json.dumps(services.get_all_users(), default=jdefault))
+
+
 
 
 def jdefault(o):

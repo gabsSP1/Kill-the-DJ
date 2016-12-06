@@ -14,9 +14,10 @@ class Services:
         if self.sessionCreated():
             return False
         else:
-            admin = User(data['admin'], True)
+            admin = User(data['admin_username'], True)
             tracklist = Tracklist(core)
-            self.session = Session(admin, data['titre'], tracklist)
+            self.session = Session(admin, data['session_name'], tracklist)
+            self.session.addUser(admin)
             return True
 
     def joinSession(self, data):
