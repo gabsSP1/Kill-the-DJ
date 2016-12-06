@@ -17,7 +17,7 @@
         "application/json"
     ],
     "paths": {
-        "/tracks/searches": {
+        "/searches": {
             "post": {
                 "operationId": "search",
                 "summary": "Search",
@@ -844,7 +844,7 @@
         "/session": {
             "post": {
                 "operationId": "start-session",
-                "summary": "Start session",
+                "summary": "Create session",
                 "tags": [
                     "Session"
                 ],
@@ -886,6 +886,69 @@
                                 "admin_username": {
                                     "type": "string"
                                 }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "session_name": "Ut",
+                                "admin_username": "anim Ut veniam laboris incididunt"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "error": "sit cillum ullamco"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "error": "reprehenderit"
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "operationId": "session-status",
+                "summary": "Get session status",
+                "tags": [
+                    "Session"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "active": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "active": false
                             }
                         }
                     },
