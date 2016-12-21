@@ -9,7 +9,7 @@ services = Services()
 
 class BaseHandler(tornado.web.RequestHandler):
     """
-    Base class for for API endpoint request handlers. 
+    Base class for for API endpoint request handlers.
     Sets headers for CORS.
     All other request handlers should extend this class
     """
@@ -33,31 +33,25 @@ class IndexHandler(BaseHandler):
         self.set_header("Content-Type", "application/json")
 
 
-class CreateOrJoinSession(BaseHandler):
+class SessionHandler(BaseHandler):
     def initialize(self, core):
         self.core = core
 
     def get(self):
         self.write(
-            json.dumps(services.sessionCreated()))
-
-
-class CreateSession(BaseHandler):
-    def initialize(self, core):
-        self.core = core
-
+            json.dumps({"active" : services.sessionCreated()}))
     def post(self):
         data = json.loads(self.request.body)
         self.write(json.dumps(services.createSession(data, core=self.core)))
 
 
-class JoinSession(BaseHandler):
+
+class UsersHandler(BaseHandler):
+    def initialize(self, core):
+        self.core = core
     def post(self):
         data = json.loads(self.request.body)
         self.write(json.dumps(services.joinSession(data)))
-
-
-class GetAllUsers(BaseHandler):
     def get(self):
         self.write(
             json.dumps(services.get_all_users(), default=jdefault))
