@@ -5,6 +5,7 @@
 .cache/
 .coverage
 .tox/
+.idea/
 MANIFEST
 build/
 dist/
