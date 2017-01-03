@@ -24,7 +24,7 @@
                 "tags": [
                     "Tracks"
                 ],
-                "description": "Search the library for tracks where ``query`` contains attributes ``uri``, ``track_name``, ``album``, ``artist``,\n``albumartist``, ``composer``, ``performer``, ``track_no``, ``genre``,\n``date``, ``comment`` or ``any``. Any of the query attributes is an array of strings, where the string items are the strings for which that attributes is matched against in the backend. \n\nIf ``uris`` is given, the search is limited to results from within the\nURI roots. For example passing ``{\"uris\": [\"file:\"]}`` will limit the search\nto the local backend.\n\n### Attributes\n- `query` – one or more queries to search for  \n- `uris` (list of string or None) – zero or more URI roots to limit the search to  \n- `exact` (bool) – if the search should use exact matching\n\n### Examples\n\n- Returns results matching 'a' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\"]\n  }\n}\n```\n\n- Returns results matching artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' and 'b' and artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\", \"b\"],\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' if within the given URI roots\n\"file:///media/music\" and \"spotify:\":  \n\n`{'any': ['a']}, }`\n```json\n{\n  \"query\": {\n    \"any\": [\"a\"],\n    \"artist\": [\"xyz\"]\n  },\n  \"uris\": [\"file:///media/music\", \"spotify:\"]\n}\n```\n\n- Returns results matching artist 'xyz' and 'abc' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\", \"abc\"]\n  },\n}\n```\n\n## Success\nA successful request has returns an array of serach results, with status code `201`. Every item in the array is a json representation of a [mopidy data model](https://docs.mopidy.com/en/latest/api/models/#module-mopidy.models), e.g. `Track`, `Artist`, `Album` etc.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message. For example a malformed search request.\n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "Search the library for tracks where ``query`` contains attributes ``uri``, ``track_name``, ``album``, ``artist``,\n``albumartist``, ``composer``, ``performer``, ``track_no``, ``genre``,\n``date``, ``comment`` or ``any``. Any of the query attributes is an array of strings, where the string items are the strings for which that attributes is matched against in the backend. \n\nIf ``uris`` is given, the search is limited to results from within the\nURI roots. For example passing ``{\"uris\": [\"file:\"]}`` will limit the search\nto the local backend.\n\n### Attributes\n- `query` – one or more queries to search for  \n- `uris` (list of string or None) – zero or more URI roots to limit the search to  \n- `exact` (bool) – if the search should use exact matching\n\n### Examples\n\n- Returns results matching 'a' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\"]\n  }\n}\n```\n\n- Returns results matching artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' and 'b' and artist 'xyz' in any backend:  \n```json\n{\n  \"query\": {\n    \"any\": [\"a\", \"b\"],\n    \"artist\": [\"xyz\"]\n  }\n}\n```\n\n- Returns results matching 'a' if within the given URI roots\n\"file:///media/music\" and \"spotify:\":  \n\n```json\n{\n  \"query\": {\n    \"any\": [\"a\"]\n  },\n  \"uris\": [\"file:///media/music\", \"spotify:\"]\n}\n```\n\n- Returns results matching artist 'xyz' and 'abc' in any backend:  \n```json\n{\n  \"query\": {\n    \"artist\": [\"xyz\", \"abc\"]\n  }\n}\n```\n\n## Success\nA successful request has returns an array of serach results, with status code `201`. Every item in the array is a json representation of a [mopidy data model](https://docs.mopidy.com/en/latest/api/models/#module-mopidy.models), e.g. `Track`, `Artist`, `Album` etc.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message. For example a malformed search request.\n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -121,65 +121,14 @@
                             },
                             "example": {
                                 "query": {
-                                    "uri": [
-                                        "sit Duis est",
-                                        "consequat veniam reprehenderit mo"
-                                    ],
-                                    "track_name": [
-                                        "do culpa exercitation ipsum eiusmod",
-                                        "occaecat sint",
-                                        "sunt dolore elit eiusmod sint"
-                                    ],
-                                    "album": [
-                                        "sint et id laborum"
-                                    ],
-                                    "artist": [
-                                        "amet reprehenderit",
-                                        "et commodo sed"
-                                    ],
-                                    "albumartist": [
-                                        "est veniam",
-                                        "magna ea",
-                                        "pr"
-                                    ],
-                                    "composer": [
-                                        "sunt minim cupidatat adipisi",
-                                        "voluptate"
-                                    ],
-                                    "performer": [
-                                        "culpa ad laboris"
-                                    ],
-                                    "track_no": [
-                                        "occaeca"
-                                    ],
-                                    "genre": [
-                                        "irure ",
-                                        "proident mollit",
-                                        "aliquip sint ullamco",
-                                        "mollit velit in",
-                                        "dolor amet labore irure est"
-                                    ],
-                                    "date": [
-                                        "commodo ve"
-                                    ],
-                                    "comment": [
-                                        "nulla quis",
-                                        "Duis commodo con",
-                                        "do est Lorem laborum",
-                                        "Excepteur aliqua proident eiusmod",
-                                        "culpa laboris non aliquip nulla"
-                                    ],
                                     "any": [
-                                        "et ea labore",
-                                        "nisi",
-                                        "magna non nisi eu amet"
+                                        "a"
                                     ]
                                 },
                                 "uris": [
-                                    "a",
-                                    "consequat"
+                                    "spotify:"
                                 ],
-                                "exact": false
+                                "exact": true
                             }
                         }
                     }
@@ -534,86 +483,14 @@
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "track": {
+                                "album": {
                                     "type": "object",
                                     "properties": {
-                                        "album": {
-                                            "type": "object",
-                                            "properties": {
-                                                "__model__": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "__model__",
-                                                "name"
-                                            ]
-                                        },
-                                        "composers": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "__model__": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "__model__",
-                                                    "name"
-                                                ]
-                                            }
-                                        },
-                                        "__model__": {
-                                            "type": "string"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "performers": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "__model__": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "__model__",
-                                                    "name"
-                                                ]
-                                            }
-                                        },
-                                        "disc_no": {
-                                            "type": "integer"
-                                        },
-                                        "uri": {
-                                            "type": "string"
-                                        },
-                                        "comment": {
-                                            "type": "string"
-                                        },
                                         "date": {
                                             "type": "string"
                                         },
-                                        "length": {
-                                            "type": "integer"
-                                        },
-                                        "last_modified": {
-                                            "type": "integer"
-                                        },
-                                        "track_no": {
-                                            "type": "integer"
+                                        "__model__": {
+                                            "type": "string"
                                         },
                                         "artists": {
                                             "type": "array",
@@ -625,39 +502,115 @@
                                                     },
                                                     "name": {
                                                         "type": "string"
+                                                    },
+                                                    "uri": {
+                                                        "type": "string"
                                                     }
                                                 },
                                                 "required": [
                                                     "__model__",
-                                                    "name"
+                                                    "name",
+                                                    "uri"
                                                 ]
                                             }
                                         },
-                                        "genre": {
+                                        "name": {
                                             "type": "string"
                                         },
-                                        "musicbrainz_id": {
+                                        "uri": {
                                             "type": "string"
-                                        },
-                                        "bitrate": {
-                                            "type": "integer"
                                         }
                                     },
                                     "required": [
-                                        "album",
+                                        "date",
                                         "__model__",
+                                        "artists",
                                         "name",
-                                        "uri",
-                                        "length",
-                                        "last_modified",
-                                        "track_no",
-                                        "artists"
+                                        "uri"
                                     ]
+                                },
+                                "__model__": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "disc_no": {
+                                    "type": "integer"
+                                },
+                                "uri": {
+                                    "type": "string"
+                                },
+                                "length": {
+                                    "type": "integer"
+                                },
+                                "track_no": {
+                                    "type": "integer"
+                                },
+                                "artists": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "__model__": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "uri": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "__model__",
+                                            "name",
+                                            "uri"
+                                        ]
+                                    }
+                                },
+                                "date": {
+                                    "type": "string"
+                                },
+                                "bitrate": {
+                                    "type": "integer"
                                 }
                             },
                             "required": [
-                                "track"
+                                "uri"
                             ]
+                        },
+                        "examples": {
+                            "application/json": {
+                                "uri": "dolore",
+                                "length": -79591288,
+                                "track_no": 3994264,
+                                "artists": [
+                                    {
+                                        "__model__": "cillum occaecat veniam nulla",
+                                        "name": "qui deserunt laborum et",
+                                        "uri": "dolore est"
+                                    },
+                                    {
+                                        "__model__": "nulla",
+                                        "name": "incididunt",
+                                        "uri": "et"
+                                    },
+                                    {
+                                        "__model__": "dolor",
+                                        "name": "do Ut",
+                                        "uri": "occaecat est Lorem"
+                                    },
+                                    {
+                                        "__model__": "ut enim",
+                                        "name": "et voluptate cillum consectetur eiusmod",
+                                        "uri": "incididunt dolore Duis veniam"
+                                    }
+                                ],
+                                "date": "nulla irure sit",
+                                "bitrate": -66466254,
+                                "disc_no": -8046280
+                            }
                         }
                     }
                 }
@@ -697,6 +650,11 @@
                                 "username": {
                                     "type": "string"
                                 }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "username": "quis elit in est"
                             }
                         }
                     },
@@ -739,10 +697,16 @@
                                 "user": {
                                     "type": "object",
                                     "properties": {
-                                        "username": "string"
+                                        "username": {
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "type": "boolean"
+                                        }
                                     },
                                     "required": [
-                                        "username"
+                                        "username",
+                                        "is_admin"
                                     ]
                                 }
                             }
@@ -751,17 +715,14 @@
                             "application/json": [
                                 {
                                     "user": {
-                                        "username": "string"
+                                        "username": "dolor fu",
+                                        "is_admin": false
                                     }
                                 },
                                 {
                                     "user": {
-                                        "username": "string"
-                                    }
-                                },
-                                {
-                                    "user": {
-                                        "username": "string"
+                                        "username": "nisi exercitation sed",
+                                        "is_admin": true
                                     }
                                 }
                             ]
@@ -813,6 +774,11 @@
                                 "username": {
                                     "type": "string"
                                 }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "username": "quis elit in est"
                             }
                         }
                     },
@@ -868,14 +834,14 @@
                                 "admin_username"
                             ],
                             "example": {
-                                "session_name": "irure",
-                                "admin_name": "in qui Lorem velit"
+                                "session_name": "test",
+                                "admin_username": "admin"
                             }
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "",
                         "schema": {
                             "type": "object",
@@ -994,16 +960,30 @@
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "",
                         "schema": {
                             "type": "object",
                             "properties": {
                                 "track": {
                                     "type": "object",
+                                    "required": [
+                                        "album",
+                                        "__model__",
+                                        "name",
+                                        "uri",
+                                        "length",
+                                        "last_modified",
+                                        "track_no",
+                                        "artists"
+                                    ],
                                     "properties": {
                                         "album": {
                                             "type": "object",
+                                            "required": [
+                                                "__model__",
+                                                "name"
+                                            ],
                                             "properties": {
                                                 "__model__": {
                                                     "type": "string"
@@ -1011,11 +991,7 @@
                                                 "name": {
                                                     "type": "string"
                                                 }
-                                            },
-                                            "required": [
-                                                "__model__",
-                                                "name"
-                                            ]
+                                            }
                                         },
                                         "composers": {
                                             "type": "array",
@@ -1107,17 +1083,7 @@
                                         "bitrate": {
                                             "type": "integer"
                                         }
-                                    },
-                                    "required": [
-                                        "album",
-                                        "__model__",
-                                        "name",
-                                        "uri",
-                                        "length",
-                                        "last_modified",
-                                        "track_no",
-                                        "artists"
-                                    ]
+                                    }
                                 }
                             },
                             "required": [
@@ -1316,14 +1282,6 @@
                     "Tracklist"
                 ],
                 "description": "# Get tracklist\nGet a list of tracks currently in the tracklist\n\n\n## Success\nWith a successfull request the response status code is `200`. A representation of the tracklist is returned in the response body. \n\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
-                "parameters": [
-                    {
-                        "name": "uri",
-                        "in": "query",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "",
@@ -1560,6 +1518,79 @@
             }
         },
         "/tracklist/votes": {
+            "delete": {
+                "operationId": "add-vote",
+                "summary": "Decrease vote count",
+                "tags": [
+                    "Tracklist"
+                ],
+                "description": "# Decrease vote count\n\nDecrease the vote count for a track in the tracklist. The track for which to decrease the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a query parameter.\n\nThe vote count is decreased by one for each request. The new votecount is return in the response. If the vote count is already 0 it is not decreased. \n\n## Success\nThe tracks vote count was decreased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`. \n\nIf the vote count is already zero when the request is recieved the response will have status code `409` and an error message.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "parameters": [
+                    {
+                        "name": "uri",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "track_uri": {
+                                    "type": "string"
+                                },
+                                "vote_count": {
+                                    "type": "integer"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "track": {
+                                    "": "commodo culpa anim do Duis"
+                                },
+                                "vote_count": 7735077
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "operationId": "add-vote",
                 "summary": "Increase vote count",
