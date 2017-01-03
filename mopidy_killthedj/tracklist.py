@@ -1,5 +1,5 @@
 import itertools
-from heapq import heappush, heappop
+from heapq import heapify, heappush, heappop
 
 
 class Track(object):
@@ -16,13 +16,13 @@ class Track(object):
     def get_votes(self):
         return self.votes
 
-    def __lt__(self,other): 
+    def __lt__(self, other):
         if not isinstance(other, Track):
-            raise TypeError("Not comparable")
+            raise TypeError("Object of type %s not comparable with Track" % (type(other)))
         return self.votes > other.votes
 
-    def __str__(self): 
-        return str("Track(%s,%s)" % (self.track_uri, self.votes))
+    def __repr__(self):
+        return str('{"uri": "%(uri)s", "votes": %(votes)s}' % {"uri": self.track_uri, "votes": self.votes})
 
 
 class Tracklist(object):
@@ -39,13 +39,13 @@ class Tracklist(object):
     def update_tracklist(self):
         """
         Update mopidy's core tracklist
-        :param tracklist:
-        :return:
+        :return: None
         """
         self.core.tracklist.clear()
         # We copy the tracklist to avoid modifying it
         tl_copy = list(self.tracklist)
-        self.core.tracklist.add(uris=[heappop(tl_copy)[0].track_uri for _ in range(len(tl_copy))])
+        self.core.tracklist.add(uris=[heappop(tl_copy)[0].track_uri
+                                      for _ in range(len(tl_copy))])
 
     def add_track(self, track_uri):
         """
@@ -67,7 +67,7 @@ class Tracklist(object):
         """
         if track_uri in self.entry_finder:
             entry = self.entry_finder.pop(track_uri)
-            entry[0] = None
+            self.tracklist.remove(entry)
             self.core.tracklist.remove({'uri': [track_uri]})
         else:
             raise KeyError('Track not in tracklist')
@@ -76,11 +76,15 @@ class Tracklist(object):
         """
         Set the vote count for a track in the tracklist
         """
+        if votes < 0:
+            raise ValueError("vote count can not be negative.")
+
         if track_uri in self.entry_finder:
             entry = self.entry_finder[track_uri]
             entry[0].set_votes(votes)
+            heapify(self.tracklist)
         else:
-            raise KeyError('Track not in tracklist')
+            raise KeyError('Track not in tracklist.')
 
     def get_track_votes(self, track_uri):
         """
