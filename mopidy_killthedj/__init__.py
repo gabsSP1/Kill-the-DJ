@@ -1,8 +1,7 @@
 from __future__ import unicode_literals
 
 import logging
-import os
-from RequestHandlers import *
+from request_handlers import *
 from mopidy import config, ext
 
 
@@ -12,26 +11,26 @@ __version__ = '0.1.0'
 logger = logging.getLogger(__name__)
 
 
-def my_app_factory(config, core):
-    return [
-        ('/session', SessionHandler, {'core': core}),
-        ('session/users', UsersHandler, {'core': core}),
-
-    ]
-
-
 def tracklist_api(config, core):
     return [
         (r'/', IndexHandler, {'version': __version__, 'core': core}),
-        (r'/tracklist', TracklistHandler, {'core': core}),
-        (r'/track', TrackHandler, {'core': core}),
-        (r'/vote', VoteHandler, {'core': core}),
-        (r'/search', SearchHandler, {'core': core}),
+
+        (r'/tracks', TrackHandler, {'core': core}),
+        (r'/searches', SearchHandler, {'core': core}),
+
+        (r'/tracklist/tracks', TracklistHandler, {'core': core}),
+        (r'/tracklist/votes', VoteHandler, {'core': core}),
+    ]
+
+
+def session_api(config, core):
+    return [
+        ('r/session', SessionHandler, {'core': core}),
+        ('r/session/users', UsersHandler, {'core': core}),
     ]
 
 
 class Extension(ext.Extension):
-
     dist_name = 'Mopidy-KillTheDJ'
     ext_name = 'killthedj'
     version = __version__
@@ -47,7 +46,7 @@ class Extension(ext.Extension):
     def setup(self, registry):
         registry.add('http:app', {
             'name': self.ext_name,
-            'factory': my_app_factory,
+            'factory': session_api,
         })
 
         # HTTP api for tracklist management and voting
@@ -55,3 +54,6 @@ class Extension(ext.Extension):
             'name': self.ext_name,
             'factory': tracklist_api,
         })
+
+
+
