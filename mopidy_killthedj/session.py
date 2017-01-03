@@ -7,7 +7,7 @@ class Session:
         self.session_name = session_name
         self.tracklist = tracklist
 
-    def addUser(self, user):
+    def add_user(self, user):
         if self.users.has_key(user.username):
             return False
         else:

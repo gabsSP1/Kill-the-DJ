@@ -1,28 +1,28 @@
-from Session import *
-from User import *
-from .models import Tracklist
+from session import *
+from user import *
+from tracklist import Tracklist
 
 
 class Services:
     def __init__(self):
         self.session = None
 
-    def sessionCreated(self):
+    def session_created(self):
         return self.session is not None
 
-    def createSession(self, data, core):
-        if self.sessionCreated():
+    def create_session(self, data, core):
+        if self.session_created():
             return False
         else:
             admin = User(data['admin_username'], True)
             tracklist = Tracklist(core)
             self.session = Session(admin, data['session_name'], tracklist)
-            self.session.addUser(admin)
+            self.session.add_user(admin)
             return True
 
-    def joinSession(self, data):
-        if self.sessionCreated():
-            return self.session.addUser(User(**data))
+    def join_session(self, data):
+        if self.session_created():
+            return self.session.add_user(User(**data))
         else:
             return False
 
