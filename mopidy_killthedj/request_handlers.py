@@ -83,6 +83,11 @@ class UsersHandler(BaseHandler):
         self.write(
             json.dumps(services.get_all_users(), default=jdefault))
 
+    def delete(self):
+        data = json.loads(self.request.body)
+        self.set_status(201)
+        self.write(json.dumps(services.leave_session(data)))
+
     def data_received(self, chunk):
         pass
 

@@ -14,4 +14,11 @@ class Session:
             self.users[user.username] = user
             return True
 
-
+    def remove_user(self, username):
+        print self.users.keys()
+        print username
+        if not self.users.has_key(username):
+            return False
+        else:
+            del self.users[username]
+            return True

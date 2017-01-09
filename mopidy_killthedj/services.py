@@ -26,6 +26,12 @@ class Services:
         else:
             return False
 
+    def leave_session(self, data):
+        if self.session_created():
+            return self.session.remove_user(data["username"])
+        else:
+            return False
+
     def get_all_users(self):
         return self.session.users
 
