@@ -22,7 +22,7 @@ class Services:
 
     def join_session(self, data):
         if self.session_created():
-            return self.session.add_user(User(**data))
+            return self.session.add_user(User(data["username"]))
         else:
             return False
 
