@@ -67,6 +67,8 @@ class SessionHandler(BaseHandler):
         if services.create_session(data, core=self.core):
             self.set_status(201)
             self.write(json.dumps(data))
+        else:
+            self.set_status(400)
 
     def data_received(self, chunk):
         pass
