@@ -133,7 +133,8 @@ class TracklistHandler(BaseHandler):
         the track is returned in the response body.
         """
         try:
-            track_uri = self.get_query_argument('uri')
+            data = json.loads(self.request.body)
+            track_uri = data['uri']
             # check that the track exists in the active mopidy backends
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
@@ -158,7 +159,8 @@ class TracklistHandler(BaseHandler):
         The track to be deleted is specified by its uri, passed as a query parameter
         """
         try:
-            track_uri = self.get_query_argument('uri')
+            data = json.loads(self.request.body)
+            track_uri = data['uri']
             # check that the track exists
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
@@ -191,7 +193,8 @@ class VoteHandler(BaseHandler):
         Get the vote for a specific track
         """
         try:
-            track_uri = self.get_query_argument('uri')
+            data = json.loads(self.request.body)
+            track_uri = data['uri']
             vote_count = services.session.tracklist.get_track_votes(track_uri)
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
@@ -215,7 +218,8 @@ class VoteHandler(BaseHandler):
         Increment the vote count for a specific track
         """
         try:
-            track_uri = self.get_query_argument('uri')
+            data = json.loads(self.request.body)
+            track_uri = data['uri']
             vote_count = services.session.tracklist.get_track_votes(track_uri)
             services.session.tracklist.set_track_votes(track_uri, votes=(vote_count + 1))
             services.session.tracklist.update_tracklist()
@@ -239,7 +243,8 @@ class VoteHandler(BaseHandler):
         :return:
         """
         try:
-            track_uri = self.get_query_argument('uri')
+            data = json.loads(self.request.body)
+            track_uri = data['uri']
             vote_count = services.session.tracklist.get_track_votes(track_uri)
             services.session.tracklist.set_track_votes(track_uri, votes=(vote_count - 1))
             services.session.tracklist.update_tracklist()
@@ -264,7 +269,8 @@ class TrackHandler(BaseHandler):
         :return:
         """
         try:
-            track_uri = self.get_query_argument('uri')
+            data = json.loads(self.request.body)
+            track_uri = data['uri']
 
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
