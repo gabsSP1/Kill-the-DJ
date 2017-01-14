@@ -135,9 +135,11 @@ class TracklistHandler(BaseHandler):
         try:
             data = json.loads(self.request.body)
             track_uri = data['uri']
+            print track_uri
             # check that the track exists in the active mopidy backends
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
+                print "hey ya un truc!"
                 services.session.tracklist.add_track(track_uri)
                 self.set_status(201)
                 self.write(json.dumps(tracks[0], cls=ModelJSONEncoder))
