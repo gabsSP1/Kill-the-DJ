@@ -109,7 +109,7 @@ class TracklistHandler(BaseHandler):
             for track, count in services.session.tracklist.tracklist:
                 if track:
                     tracks.append(
-                        {"uri": track.track_uri,
+                        {"track": self.core.library.lookup(uris=[track.track_uri]).get()[track.track_uri],
                          "votes": track.votes}
                     )
             """
@@ -119,7 +119,7 @@ class TracklistHandler(BaseHandler):
                      ]
             """
             self.set_status(200)
-            self.write(json.dumps(tracks))
+            self.write(json.dumps(tracks, cls=ModelJSONEncoder))
 
         except AttributeError as attribute_error:
             self.set_status(400)
@@ -135,11 +135,9 @@ class TracklistHandler(BaseHandler):
         try:
             data = json.loads(self.request.body)
             track_uri = data['uri']
-            print track_uri
             # check that the track exists in the active mopidy backends
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
-                print "hey ya un truc!"
                 services.session.tracklist.add_track(track_uri)
                 self.set_status(201)
                 self.write(json.dumps(tracks[0], cls=ModelJSONEncoder))
