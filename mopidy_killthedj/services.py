@@ -33,7 +33,7 @@ class Services:
             return False
 
     def get_all_users(self):
-        return self.session.users
+        return self.session.users.values()
 
 
 
