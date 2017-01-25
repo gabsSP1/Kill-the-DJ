@@ -217,12 +217,14 @@ class VoteHandler(BaseHandler):
         """
         Increment the vote count for a specific track
         """
+
         try:
             data = json.loads(self.request.body)
             track_uri = data['uri']
             vote_count = services.session.tracklist.get_track_votes(track_uri)
             services.session.tracklist.set_track_votes(track_uri, votes=(vote_count + 1))
             services.session.tracklist.update_tracklist()
+            self.write(json.dumps(track_uri))
             self.set_status(200)
 
         except KeyError as key_err:
