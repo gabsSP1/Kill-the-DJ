@@ -149,10 +149,6 @@ class TracklistHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": attribute_error.message})
 
-        except tornado.web.MissingArgumentError:
-            self.set_status(400)
-            self.write({"error": "query parameter 'uri' is missing"})
-
     def delete(self):
         """
         Delete a track from the tracklist. 
@@ -175,13 +171,31 @@ class TracklistHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": attribute_error.message})
 
-        except tornado.web.MissingArgumentError:
-            self.set_status(400)
-            self.write({"error": "query parameter 'uri' is missing"})
-
         except KeyError as key_err:
             self.set_status(404)
             self.write({"error": key_err.message})
+
+    def data_received(self, chunk):
+        pass
+
+
+class PlaybackHandler(BaseHandler):
+    def get(self):
+        """
+        Get the uri of track currently playing
+        """
+        try:
+            current_track = self.core.playback.get_current_track().get()
+            if current_track:
+                self.set_status(200)
+                self.write({"uri": current_track.uri})
+            else:
+                self.set_status(404)
+                self.write({"error": "no track currently playing"})
+
+        except AttributeError as attribute_error:
+            self.set_status(400)
+            self.write({"error": attribute_error.message})
 
     def data_received(self, chunk):
         pass
@@ -209,6 +223,10 @@ class VoteHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": key_err.message})
 
+        except AttributeError as attribute_error:
+            self.set_status(400)
+            self.write({"error": attribute_error.message})
+
         except tornado.web.MissingArgumentError:
             self.set_status(400)
             self.write({"error": "query parameter 'uri' is missing"})
@@ -235,6 +253,10 @@ class VoteHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": val_err.message})
 
+        except AttributeError as attribute_error:
+            self.set_status(400)
+            self.write({"error": attribute_error.message})
+
         except tornado.web.MissingArgumentError:
             self.set_status(400)
             self.write({"error": "query parameter 'uri' is missing"})
@@ -242,7 +264,6 @@ class VoteHandler(BaseHandler):
     def delete(self):
         """
         Decrement the vote count for a specific track
-        :return:
         """
         try:
             data = json.loads(self.request.body)
@@ -256,6 +277,10 @@ class VoteHandler(BaseHandler):
             self.set_status(404)
             self.write({"error": key_err.message})
 
+        except AttributeError as attribute_error:
+            self.set_status(400)
+            self.write({"error": attribute_error.message})
+
         except tornado.web.MissingArgumentError:
             self.set_status(400)
             self.write({"error": "query parameter 'uri' is missing"})
@@ -268,7 +293,6 @@ class TrackHandler(BaseHandler):
     def get(self):
         """
         Get information for a specific track
-        :return:
         """
         try:
             data = json.loads(self.request.body)
