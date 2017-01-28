@@ -38,7 +38,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = location.protocol + '//' + location.host + location.pathname + "/api_specification.json";
+        url = window.location.href.split('?')[0] + "/api_specification.json";
       }
 
       hljs.configure({
