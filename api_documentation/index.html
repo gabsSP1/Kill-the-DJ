@@ -38,7 +38,8 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = window.location.href.split('?')[0] + "/api_specification.json";
+        url = location.href.substring(0, location.href.lastIndexOf('/')) + "/api_specification.json";
+        console.log(url);
       }
 
       hljs.configure({
