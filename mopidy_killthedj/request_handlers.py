@@ -58,17 +58,35 @@ class IndexHandler(BaseHandler):
 
 class SessionHandler(BaseHandler):
     def get(self):
-        self.set_status(200)
-        self.write(
-            json.dumps({"active": services.session_created()}))
+        """
+        Get status of session
+        :return:
+        """
+        try:
+            self.set_status(200)
+            self.write(
+                json.dumps({"active": services.session_created()}))
+        except Exception as err:
+            self.set_status(400)
+            self.write({"error": err.message})
 
     def post(self):
-        data = json.loads(self.request.body)
-        if services.create_session(data, core=self.core):
+        """
+        Create a new session and add the admin user
+        :return:
+        """
+        try:
+            data = json.loads(self.request.body)
+            username = data["admin_username"]
+            services.create_session(data, core=self.core)
+            cookie = services.get_user().cookie
+
             self.set_status(201)
-            self.write(json.dumps(data))
-        else:
+            self.write({"username": username,
+                        "cookie": cookie})
+        except Exception as err:
             self.set_status(400)
+            self.write({"error": err.message})
 
     def data_received(self, chunk):
         pass
@@ -76,22 +94,69 @@ class SessionHandler(BaseHandler):
 
 class UsersHandler(BaseHandler):
     def post(self):
-        data = json.loads(self.request.body)
-        self.set_status(201)
-        self.write(json.dumps(services.join_session(data)))
+        """
+        Method for adding a user to the session.
+        User to be added from the session is specified in the
+        request body. If the request was successful the representation of the
+        user is returned in the response.
+
+        If the session is not active or a user with that username already
+        is in the session, an error response is sent.
+        :return:
+        """
+        try:
+            data = json.loads(self.request.body)
+            self.set_status(201)
+            services.join_session(data)
+            username = data['username']
+            cookie = services.get_user().cookie
+            self.write({"username": username,
+                        "cookie": cookie})
+            self.write(data)
+        except Exception as err:
+            self.set_status(400)
+            self.write({"error": err.message})
 
     def get(self):
-        self.set_status(200)
-        self.write(
-            json.dumps(services.get_all_users(), default=jdefault))
+        """
+        Method for getting the users currently in the session.
+        If the request was successful a list of users is returned
+        in the response
+
+        If the session is not active an error response is sent.
+        :return:
+        """
+        try:
+            self.set_status(200)
+            self.write(
+                json.dumps(services.get_all_users(), default=jdefault))
+        except Exception as err:
+            self.set_status(400)
+            self.write({"error": err.message})
 
     def delete(self):
-        data = json.loads(self.request.body)
-        self.set_status(201)
-        self.write(json.dumps(services.leave_session(data)))
+        """
+        Method for removing a user from the session.
+        The user to be removed from the session is specified in the
+        request body. If the request was successful the representation of the
+        user is returned in the response
+
+        If the session is not active or no user with that username
+        is in the session, an error response is sent.
+        :return:
+        """
+        try:
+            data = json.loads(self.request.body)
+            self.set_status(201)
+            services.leave_session(data)
+            self.write(data)
+        except Exception as err:
+            self.set_status(400)
+            self.write({"error": err.message})
 
     def data_received(self, chunk):
         pass
+
 
 
 def jdefault(o):
@@ -180,19 +245,22 @@ class TracklistHandler(BaseHandler):
 
 
 class PlaybackHandler(BaseHandler):
-    def get(self):
+    def get(self, function):
         """
         Get the uri of track currently playing
         """
         try:
-            current_track = self.core.playback.get_current_track().get()
-            if current_track:
-                self.set_status(200)
-                self.write({"uri": current_track.uri})
+            if function == "current":
+                current_track = self.core.playback.get_current_track().get()
+                if current_track:
+                    self.set_status(200)
+                    self.write({"uri": current_track.uri})
+                else:
+                    self.set_status(404)
+                    self.write({"error": "no track currently playing"})
             else:
                 self.set_status(404)
-                self.write({"error": "no track currently playing"})
-
+                self.write({"error": "function: %s not supported" % function})
         except AttributeError as attribute_error:
             self.set_status(400)
             self.write({"error": attribute_error.message})
@@ -249,13 +317,9 @@ class VoteHandler(BaseHandler):
             self.set_status(404)
             self.write({"error": key_err.message})
 
-        except ValueError as val_err:
+        except (ValueError, AttributeError) as err:
             self.set_status(400)
-            self.write({"error": val_err.message})
-
-        except AttributeError as attribute_error:
-            self.set_status(400)
-            self.write({"error": attribute_error.message})
+            self.write({"error": err.message})
 
         except tornado.web.MissingArgumentError:
             self.set_status(400)
@@ -334,8 +398,9 @@ class SearchHandler(BaseHandler):
                                                          uris=uris,
                                                          exact=exact
                                                          ).get()
+                search_result_json = json.loads(json.dumps(search_result, cls=ModelJSONEncoder))
                 self.set_status(201)
-                self.write(json.dumps(search_result, cls=ModelJSONEncoder))
+                self.write(json.dumps(filter_search_result(search_result_json)))
 
         except ValidationError as validation_err:
             self.set_status(400)
@@ -343,3 +408,16 @@ class SearchHandler(BaseHandler):
 
     def data_received(self, chunk):
         pass
+
+
+def filter_search_result(search_result_json):
+    filtered_result = []
+    for track in search_result_json[0]["tracks"]:
+        filtered_result.append({
+                    "uri": track["uri"],
+                    "name": track["name"],
+                    "length": track["length"],
+                    "artists": track["artists"]
+                    })
+    return filtered_result
+

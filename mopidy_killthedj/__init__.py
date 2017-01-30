@@ -13,6 +13,7 @@ __version__ = '0.1.0'
 logger = logging.getLogger(__name__)
 
 
+
 def ktd_api(config, core):
     return [
         (r'/', IndexHandler, {'version': __version__, 'core': core}),
@@ -22,7 +23,7 @@ def ktd_api(config, core):
         (r'/searches', SearchHandler, {'core': core}),
         (r'/tracklist/tracks', TracklistHandler, {'core': core}),
         (r'/tracklist/votes', VoteHandler, {'core': core}),
-        (r'/tracklist/playback/current', PlaybackHandler, {'core': core}),
+        (r'/tracklist/playback/(?P<function>[a-z]+)', PlaybackHandler, {'core': core}),
     ]
 
 
@@ -42,7 +43,7 @@ class Extension(ext.Extension):
     def setup(self, registry):
         registry.add('http:app', {
             'name': self.ext_name,
-            'factory': ktd_api,
+            'factory': ktd_api
         })
 
 

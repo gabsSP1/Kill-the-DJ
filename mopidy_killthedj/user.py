@@ -1,6 +1,7 @@
 class User():
-    def __init__(self, username, is_admin=False):
+    def __init__(self, username, cookie, is_admin=False):
         self.username = username
+        self.cookie = cookie
         self.is_admin = is_admin
 
     def __repr__(self):

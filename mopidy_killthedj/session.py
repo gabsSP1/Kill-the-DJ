@@ -1,4 +1,4 @@
-
+import os
 
 class Session:
     def __init__(self, admin_username, session_name, tracklist):
@@ -8,17 +8,15 @@ class Session:
         self.tracklist = tracklist
 
     def add_user(self, user):
-        if self.users.has_key(user.username):
-            return False
+        if user.username in self.users:
+            raise Exception("user with username: %s already in session"
+                                % user.username)
         else:
             self.users[user.username] = user
-            return True
 
     def remove_user(self, username):
-        print self.users.keys()
-        print username
-        if not self.users.has_key(username):
-            return False
+        if username not in self.users:
+            raise Exception("user with username: %s not in session"
+                                % username)
         else:
             del self.users[username]
-            return True
