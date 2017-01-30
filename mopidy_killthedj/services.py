@@ -1,9 +1,18 @@
+from operator import attrgetter
+
+import pykka
+
+from mopidy.core import CoreListener
+
 from session import *
 from user import *
 from tracklist import Tracklist
+from mopidy import backend
 
 
-class Services:
+
+class Services():
+
     def __init__(self):
         self.session = None
 
@@ -20,6 +29,9 @@ class Services:
             self.session.add_user(admin)
             return True
 
+    def get_self(self):
+        return self
+
     def join_session(self, data):
         if self.session_created():
             return self.session.add_user(User(data["username"]))
@@ -34,6 +46,9 @@ class Services:
 
     def get_all_users(self):
         return self.session.users.values()
+
+    def play_song(self, core):
+        core.playback.play()
 
 
 

@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 import tornado.web
 import json
 from mopidy.models import ModelJSONEncoder
@@ -6,6 +8,17 @@ from services import *
 
 services = Services()
 
+
+class Listener(CoreListener, pykka.ThreadingActor):
+
+    def __init__(self):
+        super(Listener, self).__init__()
+
+    def track_playback_ended(self, tl_track, time_position):
+        del services.session.tracklist.trackToPlay[max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes')).track.uri]
+
+listener = Listener()
+listener.start()
 
 class BaseHandler(tornado.web.RequestHandler):
     """
@@ -45,9 +58,6 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class IndexHandler(BaseHandler):
-    def initialize(self, version, core):
-        self.core = core
-        self.version = version
 
     def get(self):
         self.write({'message': 'Kill the DJ API', 'version': self.version})
@@ -64,7 +74,7 @@ class SessionHandler(BaseHandler):
 
     def post(self):
         data = json.loads(self.request.body)
-        if services.create_session(data, core=self.core):
+        if services.create_session(data, self.core):
             self.set_status(201)
             self.write(json.dumps(data))
         else:
@@ -72,6 +82,8 @@ class SessionHandler(BaseHandler):
 
     def data_received(self, chunk):
         pass
+
+
 
 
 class UsersHandler(BaseHandler):
@@ -104,21 +116,15 @@ class TracklistHandler(BaseHandler):
         Get the tracks currently in the tracklist
         """
         try:
-            # tracklist = self.core.tracklist.get_tl_tracks().get()
+            self.set_status(200)
             tracks = []
-            for track, count in services.session.tracklist.tracklist:
+            for track in sorted(services.session.tracklist.trackToPlay.values(), key=attrgetter("votes"), reverse=True):
                 if track:
                     tracks.append(
-                        {"track": self.core.library.lookup(uris=[track.track_uri]).get()[track.track_uri],
+                        {"track": track.track,
                          "votes": track.votes}
                     )
-            """
-            tracks = [
-                        json.dumps(track, cls=ModelJSONEncoder)
-                        for (tlid, track) in tracklist
-                     ]
-            """
-            self.set_status(200)
+
             self.write(json.dumps(tracks, cls=ModelJSONEncoder))
 
         except AttributeError as attribute_error:
@@ -138,7 +144,11 @@ class TracklistHandler(BaseHandler):
             # check that the track exists in the active mopidy backends
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
-                services.session.tracklist.add_track(track_uri)
+                if self.core.playback.get_state().get() != "playing":
+                    self.core.tracklist.add(at_position=1, uri=tracks[0].uri)
+                    services.play_song(self.core)
+                else:
+                    services.session.tracklist.add_track(tracks[0])
                 self.set_status(201)
                 self.write(json.dumps(tracks[0], cls=ModelJSONEncoder))
             else:
@@ -161,15 +171,9 @@ class TracklistHandler(BaseHandler):
         try:
             data = json.loads(self.request.body)
             track_uri = data['uri']
-            # check that the track exists
-            tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
-            if tracks:
-                services.session.tracklist.remove_track(track_uri)
-                self.set_status(200)
-                self.write(json.dumps(tracks[0], cls=ModelJSONEncoder))
-            else:
-                self.set_status(404)
-                self.write({"error": "track not found"})
+            services.session.tracklist.remove(filter({'uri': track_uri}))
+            self.set_status(200)
+            self.write(json.dumps(track_uri, cls=ModelJSONEncoder))
 
         except AttributeError as attribute_error:
             self.set_status(400)
@@ -188,30 +192,6 @@ class TracklistHandler(BaseHandler):
 
 
 class VoteHandler(BaseHandler):
-    def get(self):
-        """
-        Get the vote for a specific track
-        """
-        try:
-            data = json.loads(self.request.body)
-            track_uri = data['uri']
-            vote_count = services.session.tracklist.get_track_votes(track_uri)
-            tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
-            if tracks:
-                self.set_status(200)
-                self.write({'track': json.dumps(tracks[0], cls=ModelJSONEncoder),
-                            'vote_count': vote_count})
-            else:
-                self.set_status(404)
-                self.write({"error": "track not found"})
-
-        except KeyError as key_err:
-            self.set_status(400)
-            self.write({"error": key_err.message})
-
-        except tornado.web.MissingArgumentError:
-            self.set_status(400)
-            self.write({"error": "query parameter 'uri' is missing"})
 
     def put(self):
         """
@@ -221,9 +201,10 @@ class VoteHandler(BaseHandler):
         try:
             data = json.loads(self.request.body)
             track_uri = data['uri']
-            vote_count = services.session.tracklist.get_track_votes(track_uri)
-            services.session.tracklist.set_track_votes(track_uri, votes=(vote_count + 1))
-            services.session.tracklist.update_tracklist()
+            services.session.tracklist.trackToPlay[track_uri].votes += 1
+            first_track = max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes'))
+            self.core.tracklist.remove(self.core.tracklist.filter({'uri': first_track.track.uri}))
+            self.core.tracklist.add(at_position=1, uri=first_track.track.uri)
             self.write(json.dumps(track_uri))
             self.set_status(200)
 
@@ -239,26 +220,6 @@ class VoteHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": "query parameter 'uri' is missing"})
 
-    def delete(self):
-        """
-        Decrement the vote count for a specific track
-        :return:
-        """
-        try:
-            data = json.loads(self.request.body)
-            track_uri = data['uri']
-            vote_count = services.session.tracklist.get_track_votes(track_uri)
-            services.session.tracklist.set_track_votes(track_uri, votes=(vote_count - 1))
-            services.session.tracklist.update_tracklist()
-            self.set_status(200)
-
-        except KeyError as key_err:
-            self.set_status(404)
-            self.write({"error": key_err.message})
-
-        except tornado.web.MissingArgumentError:
-            self.set_status(400)
-            self.write({"error": "query parameter 'uri' is missing"})
 
     def data_received(self, chunk):
         pass
