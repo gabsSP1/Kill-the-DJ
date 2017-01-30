@@ -33,7 +33,7 @@ class BaseHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers",
-                        "Origin, X-Requested-With, Content-Type, Accept")
+                        "Origin, X-Requested-With, Content-Type, Accept, Username")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, PUT, OPTIONS, DELETE')
         self.set_header("Content-Type", "application/json")
 
@@ -58,6 +58,9 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class IndexHandler(BaseHandler):
+    def initialize(self, version, core):
+        self.core = core
+        self.version = version
 
     def get(self):
         self.write({'message': 'Kill the DJ API', 'version': self.version})
@@ -74,7 +77,7 @@ class SessionHandler(BaseHandler):
 
     def post(self):
         data = json.loads(self.request.body)
-        if services.create_session(data, self.core):
+        if services.create_session(data, core=self.core):
             self.set_status(201)
             self.write(json.dumps(data))
         else:
@@ -82,8 +85,6 @@ class SessionHandler(BaseHandler):
 
     def data_received(self, chunk):
         pass
-
-
 
 
 class UsersHandler(BaseHandler):
@@ -191,6 +192,28 @@ class TracklistHandler(BaseHandler):
         pass
 
 
+class PlaybackHandler(BaseHandler):
+    def get(self):
+        """
+        Get the uri of track currently playing
+        """
+        try:
+            current_track = self.core.playback.get_current_track().get()
+            if current_track:
+                self.set_status(200)
+                self.write({"uri": current_track.uri})
+            else:
+                self.set_status(404)
+                self.write({"error": "no track currently playing"})
+
+        except AttributeError as attribute_error:
+            self.set_status(400)
+            self.write({"error": attribute_error.message})
+
+    def data_received(self, chunk):
+        pass
+
+
 class VoteHandler(BaseHandler):
 
     def put(self):
@@ -215,6 +238,10 @@ class VoteHandler(BaseHandler):
         except ValueError as val_err:
             self.set_status(400)
             self.write({"error": val_err.message})
+
+        except AttributeError as attribute_error:
+            self.set_status(400)
+            self.write({"error": attribute_error.message})
 
         except tornado.web.MissingArgumentError:
             self.set_status(400)

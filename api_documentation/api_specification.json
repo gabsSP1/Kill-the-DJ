@@ -469,12 +469,22 @@
                 "tags": [
                     "Tracks"
                 ],
-                "description": "# Get information about a track\n\nGet information about a track by sending its ([mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) as a query parameter, example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.\n\n## Success\nIf the track was found in the library the response status code is `200`. A representation of the track is returned in the response body.\n\n## Error\nIf the track was not found in the library the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Get information about a track\n\nGet information about a track by sending its ([mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) as a parameter in the json body, \nexample: \n```json\n{\n  \"uri\": \"spotify:track:1CBnhr9hudZ73rQTZ1RBHk\"\n}\n```\n\n## Success\nIf the track was found in the library the response status code is `200`. A representation of the track is returned in the response body.\n\n## Error\nIf the track was not found in the library the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
-                        "name": "uri",
-                        "in": "query",
-                        "type": "string"
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "uri": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "uri"
+                            ]
+                        }
                     }
                 ],
                 "responses": {
@@ -612,6 +622,48 @@
                                 "disc_no": -8046280
                             }
                         }
+                    },
+                    "400": {
+                        "description": "",
+                        "examples": {
+                            "application/json": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "error": "est id occaecat officia"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "examples": {
+                            "application/json": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -736,6 +788,11 @@
                                 "error": {
                                     "type": "string"
                                 }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "error": "ullamco minim culpa"
                             }
                         }
                     }
@@ -889,7 +946,7 @@
                         },
                         "examples": {
                             "application/json": {
-                                "error": "reprehenderit"
+                                "error": "qui"
                             }
                         }
                     }
@@ -943,6 +1000,77 @@
                 }
             }
         },
+        "/tracklist/playback/current": {
+            "get": {
+                "operationId": "get-current",
+                "summary": "Get current track",
+                "tags": [
+                    "Tracklist"
+                ],
+                "description": "# Get the currently playig track\n\n## Success\nWith a successful response the status code is `200`, and the uri of the currently playing track is returned in the response body with the key parameter \"uri\".\n\n## Error\nIf there is no track currently playing the response code is `404`, and the body contains an error message.  \n\nFor other errors (caused by the client) the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "uri": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "uri": "amet incididunt sit velit"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "error": "non tempor cupidatat velit"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": {
+                                "error": "cons"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/tracklist/tracks": {
             "post": {
                 "operationId": "add-track",
@@ -953,10 +1081,19 @@
                 "description": "# Add a track to the tracklist\nA track is identified by its track uri ([mopidy uris](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) are unique identifiers used by the mopidy backend and backend extensions), example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.  \n\nThe track uri for the track to be added is specified in the query parameter **uri**.\n\n## Success\nIf the track was successfully added to the tracklist the response status code is `200`. A representation of the track is returned in the response body.\n\n\n## Errors\nIf the track to be added was not found the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
-                        "name": "uri",
-                        "in": "query",
-                        "required": true,
-                        "type": "string"
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "uri": {
+                                    "type": "string"
+                                }
+                            },
+                            "example": {
+                                "uri": "qui"
+                            }
+                        }
                     }
                 ],
                 "responses": {
@@ -1135,10 +1272,16 @@
                 "description": "# Remove a track from the tracklist\nA track is identified by its track uri ([mopidy uris](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) are unique identifiers used by the mopidy backend and backend extensions), example: `spotify:track:1CBnhr9hudZ73rQTZ1RBHk`.  \n\nThe track uri for the track to be deleted is specified in the query parameter **uri**.\n\n## Success\nIf the track was successfully removed from the tracklist the response status code is `200`. A representation of the track is returned in the response body.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
-                        "name": "uri",
-                        "in": "query",
-                        "required": true,
-                        "type": "string"
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "uri": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     }
                 ],
                 "responses": {
@@ -1286,98 +1429,16 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "track": {
+                            "type": "object",
+                            "properties": {
+                                "album": {
                                     "type": "object",
-                                    "required": [
-                                        "album",
-                                        "__model__",
-                                        "name",
-                                        "uri",
-                                        "length",
-                                        "last_modified",
-                                        "track_no",
-                                        "artists"
-                                    ],
                                     "properties": {
-                                        "album": {
-                                            "type": "object",
-                                            "required": [
-                                                "__model__",
-                                                "name"
-                                            ],
-                                            "properties": {
-                                                "__model__": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        },
-                                        "composers": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "__model__": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "__model__",
-                                                    "name"
-                                                ]
-                                            }
-                                        },
-                                        "__model__": {
-                                            "type": "string"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "performers": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "__model__": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "__model__",
-                                                    "name"
-                                                ]
-                                            }
-                                        },
-                                        "disc_no": {
-                                            "type": "integer"
-                                        },
-                                        "uri": {
-                                            "type": "string"
-                                        },
-                                        "comment": {
-                                            "type": "string"
-                                        },
                                         "date": {
                                             "type": "string"
                                         },
-                                        "length": {
-                                            "type": "integer"
-                                        },
-                                        "last_modified": {
-                                            "type": "integer"
-                                        },
-                                        "track_no": {
-                                            "type": "integer"
+                                        "__model__": {
+                                            "type": "string"
                                         },
                                         "artists": {
                                             "type": "array",
@@ -1389,28 +1450,82 @@
                                                     },
                                                     "name": {
                                                         "type": "string"
+                                                    },
+                                                    "uri": {
+                                                        "type": "string"
                                                     }
                                                 },
                                                 "required": [
                                                     "__model__",
-                                                    "name"
+                                                    "name",
+                                                    "uri"
                                                 ]
                                             }
                                         },
-                                        "genre": {
+                                        "name": {
                                             "type": "string"
                                         },
-                                        "musicbrainz_id": {
+                                        "uri": {
                                             "type": "string"
-                                        },
-                                        "bitrate": {
-                                            "type": "integer"
                                         }
+                                    },
+                                    "required": [
+                                        "date",
+                                        "__model__",
+                                        "artists",
+                                        "name",
+                                        "uri"
+                                    ]
+                                },
+                                "__model__": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "disc_no": {
+                                    "type": "integer"
+                                },
+                                "uri": {
+                                    "type": "string"
+                                },
+                                "length": {
+                                    "type": "integer"
+                                },
+                                "track_no": {
+                                    "type": "integer"
+                                },
+                                "artists": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "__model__": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "uri": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "__model__",
+                                            "name",
+                                            "uri"
+                                        ]
                                     }
+                                },
+                                "date": {
+                                    "type": "string"
+                                },
+                                "bitrate": {
+                                    "type": "integer"
                                 }
                             },
                             "required": [
-                                "track"
+                                "uri"
                             ]
                         },
                         "examples": {
@@ -1524,7 +1639,7 @@
                 "tags": [
                     "Tracklist"
                 ],
-                "description": "# Decrease vote count\n\nDecrease the vote count for a track in the tracklist. The track for which to decrease the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a query parameter.\n\nThe vote count is decreased by one for each request. The new votecount is return in the response. If the vote count is already 0 it is not decreased. \n\n## Success\nThe tracks vote count was decreased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`. \n\nIf the vote count is already zero when the request is recieved the response will have status code `409` and an error message.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Decrease vote count\n\nDecrease the vote count for a track in the tracklist. The track for which to decrease the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a parameter in the json body.\n\nThe vote count is decreased by one for each request. The new votecount is return in the response. If the vote count is already 0 it is not decreased. \n\n## Success\nThe tracks vote count was decreased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`. \n\nIf the vote count is already zero when the request is recieved the response will have status code `409` and an error message.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "uri",
@@ -1597,13 +1712,22 @@
                 "tags": [
                     "Tracklist"
                 ],
-                "description": "# Increase vote count\n\nIncrease the vote count for a track in the tracklist. The track for which to increase the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a query parameter.\n\nThe vote count is increased by one for each request.\n\n## Success\nThe tracks vote count was increased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Increase vote count\n\nIncrease the vote count for a track in the tracklist. The track for which to increase the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a parameter in the json body.\n\nThe vote count is increased by one for each request.\n\n## Success\nThe tracks vote count was increased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
-                        "name": "uri",
-                        "in": "query",
-                        "required": true,
-                        "type": "string"
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "uri": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "uri"
+                            ]
+                        }
                     }
                 ],
                 "responses": {

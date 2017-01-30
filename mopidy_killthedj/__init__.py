@@ -16,14 +16,13 @@ logger = logging.getLogger(__name__)
 def ktd_api(config, core):
     return [
         (r'/', IndexHandler, {'version': __version__, 'core': core}),
-        (r"/docs/(.*)", tornado.web.StaticFileHandler,
-            {"path": root + "/API_documentation/", "default_filename": "index.html"}),
         (r'/session', SessionHandler, {'core': core}),
         (r'/session/users', UsersHandler, {'core': core}),
         (r'/tracks', TrackHandler, {'core': core}),
         (r'/searches', SearchHandler, {'core': core}),
         (r'/tracklist/tracks', TracklistHandler, {'core': core}),
         (r'/tracklist/votes', VoteHandler, {'core': core}),
+        (r'/tracklist/playback/current', PlaybackHandler, {'core': core}),
     ]
 
 
