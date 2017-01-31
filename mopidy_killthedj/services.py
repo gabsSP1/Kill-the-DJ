@@ -18,6 +18,7 @@ from mopidy import backend
 class Services:
     def __init__(self):
         self.session = None
+        self.core = None
         self.cookie_secret = os.urandom(32)
         self.hash = hashlib.sha256()
         self.core = None
@@ -30,6 +31,7 @@ class Services:
         return self.session is not None
 
     def create_session(self, data, core):
+        self.core  = core
         if self.session_created():
             raise SessionNotActiveError("session already active")
         else:
@@ -88,8 +90,9 @@ class Services:
     def get_all_users(self):
         return self.session.users.values()
 
-    def play_song(self, core):
-        core.playback.play()
+    def play_song(self, uri):
+        self.core.tracklist.add(at_position=1, uri=uri)
+        self.core.playback.play()
 
 
 
