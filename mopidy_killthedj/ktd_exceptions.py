@@ -10,7 +10,7 @@ class UserNotFoundError(Exception):
         super(UserNotFoundError, self).__init__(*args, **kwargs)
 
 
-class AuthentiationError(Exception):
+class AuthenticationError(Exception):
     def __init__(self, *args, **kwargs):
-        super(AuthentiationError, self).__init__(*args, **kwargs)
+        super(AuthenticationError, self).__init__(*args, **kwargs)
 

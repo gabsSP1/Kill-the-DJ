@@ -1,4 +1,5 @@
-class User():
+
+class User(object):
     def __init__(self, username, cookie, is_admin=False, votes_left=10):
         self.username = username
         self.cookie = cookie

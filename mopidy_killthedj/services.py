@@ -20,6 +20,7 @@ class Services:
         self.session = None
         self.cookie_secret = os.urandom(32)
         self.hash = hashlib.sha256()
+        self.core = None
 
     def session_created(self):
         """
@@ -41,6 +42,7 @@ class Services:
             tracklist = Tracklist(core)
             self.session = Session(admin_user, data['session_name'], tracklist)
             self.session.add_user(admin_user)
+            self.core = core
 
     def get_self(self):
         return self

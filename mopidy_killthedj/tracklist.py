@@ -17,7 +17,6 @@ class Tracklist(object):
         self.trackHistory = []
 
     def add_track(self, track):
-
         if track.uri not in self.trackToPlay:
             track_structure = TrackStructure(track)
             self.trackToPlay[track.uri] = track_structure

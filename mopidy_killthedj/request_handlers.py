@@ -159,7 +159,6 @@ class UsersHandler(BaseHandler):
         If the session is not active an error response is sent.
 
         TODO: Figure out privileges required for request?
-
         :return:
         """
         try:
@@ -180,6 +179,9 @@ class UsersHandler(BaseHandler):
 
         If the session is not active or no USER with that username
         is in the session, an error response is sent.
+
+        Only the ADMINISTRATOR user can delete users from the session.
+        Request requires ADMINISTRATOR privileges.
         :return:
         """
         try:
