@@ -7,12 +7,6 @@ class Track(object):
         self.track_uri = track_uri
         self.votes = 0
 
-    def increment_votes(self, ):
-        self.votes += 1
-
-    def set_votes(self, votes):
-        self.votes = votes
-
     def get_votes(self):
         return self.votes
 
@@ -82,6 +76,31 @@ class Tracklist(object):
         if track_uri in self.entry_finder:
             entry = self.entry_finder[track_uri]
             entry[0].set_votes(votes)
+            heapify(self.tracklist)
+        else:
+            raise KeyError('Track not in tracklist.')
+
+    def decrement_track_votes(self, track_uri):
+        """
+        Decrement the vote count for a track in the tracklist
+        """
+        if track_uri in self.entry_finder:
+            entry = self.entry_finder[track_uri]
+            if entry[0].votes > 1:
+                entry[0].votes -= 1
+                heapify(self.tracklist)
+            else:
+                raise Exception("vote count for track can not be negative")
+        else:
+            raise KeyError('Track not in tracklist.')
+
+    def increment_track_votes(self, track_uri):
+        """
+        Increment the vote count for a track in the tracklist
+        """
+        if track_uri in self.entry_finder:
+            entry = self.entry_finder[track_uri]
+            entry[0].votes += 1
             heapify(self.tracklist)
         else:
             raise KeyError('Track not in tracklist.')
