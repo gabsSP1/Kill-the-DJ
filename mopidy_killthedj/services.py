@@ -1,9 +1,18 @@
 from session import Session
 from user import User
+from operator import attrgetter
+
+import pykka
+
+from mopidy.core import CoreListener
+
+from session import *
+from user import *
 from tracklist import Tracklist
 from ktd_exceptions import SessionNotActiveError, UserNotFoundError
 import os
 import hashlib
+from mopidy import backend
 
 
 class Services:
@@ -32,6 +41,9 @@ class Services:
             tracklist = Tracklist(core)
             self.session = Session(admin_user, data['session_name'], tracklist)
             self.session.add_user(admin_user)
+
+    def get_self(self):
+        return self
 
     def join_session(self, data):
         if self.session_created():
@@ -73,6 +85,9 @@ class Services:
 
     def get_all_users(self):
         return self.session.users.values()
+
+    def play_song(self, core):
+        core.playback.play()
 
 
 
