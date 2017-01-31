@@ -4,8 +4,6 @@ class TrackStructure(object):
         self.votes = 0
 
 
-
-
 class Tracklist(object):
     """
     Tracklist works as following:
@@ -32,4 +30,3 @@ class Tracklist(object):
             del self.trackToPlay[track_uri]
         else:
             raise KeyError('Track not in tracklist')
-
