@@ -23,7 +23,6 @@ class Tracklist(object):
         if track.uri not in self.trackToPlay:
             track_structure = TrackStructure(track)
             self.trackToPlay[track.uri] = track_structure
-            self.core.tracklist.add(at_position=1, uri=track.uri)
 
     def remove_track(self, track_uri):
         """

@@ -15,7 +15,9 @@ class Listener(CoreListener, pykka.ThreadingActor):
         super(Listener, self).__init__()
 
     def track_playback_ended(self, tl_track, time_position):
-        del services.session.tracklist.trackToPlay[max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes')).track.uri]
+        first_track = max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes'))
+        services.play_song(first_track.track.uri)
+        del services.session.tracklist.trackToPlay[first_track.track.uri]
 
 listener = Listener()
 listener.start()
@@ -146,8 +148,7 @@ class TracklistHandler(BaseHandler):
             tracks = self.core.library.lookup(uris=[track_uri]).get()[track_uri]
             if tracks:
                 if self.core.playback.get_state().get() != "playing":
-                    self.core.tracklist.add(at_position=1, uri=tracks[0].uri)
-                    services.play_song(self.core)
+                    services.play_song(uri=tracks[0].uri)
                 else:
                     services.session.tracklist.add_track(tracks[0])
                 self.set_status(201)
@@ -225,9 +226,6 @@ class VoteHandler(BaseHandler):
             data = json.loads(self.request.body)
             track_uri = data['uri']
             services.session.tracklist.trackToPlay[track_uri].votes += 1
-            first_track = max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes'))
-            self.core.tracklist.remove(self.core.tracklist.filter({'uri': first_track.track.uri}))
-            self.core.tracklist.add(at_position=1, uri=first_track.track.uri)
             self.write(json.dumps(track_uri))
             self.set_status(200)
 
