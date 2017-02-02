@@ -104,8 +104,6 @@ class SessionHandler(BaseHandler):
 
             services.create_session(data, core=self.core)
             cookie = services.get_user(username).cookie
-
-            print cookie
             self.set_status(201)
             self.write(json.dumps({"session_name": session_name,
                                    "session_length": session_length,
@@ -221,7 +219,9 @@ class TracklistHandler(BaseHandler):
         """
         try:
             # Try to get the cookie, cookie is None if the cookie is not set
+            print self.request.headers
             cookie = self.request.headers.get("X-KTD-Cookie")
+            print cookie
             # if cookie is none get_user_by_cookie raises an error
             user = services.get_user_by_cookie(cookie)
 
@@ -256,7 +256,6 @@ class TracklistHandler(BaseHandler):
             # Try to get the cookie, cookie is None if the cookie is not set
             cookie = self.request.headers.get("X-KTD-Cookie")
 
-            print cookie
             # if cookie is none get_user_by_cookie raises an error
             user = services.get_user_by_cookie(cookie)
 
