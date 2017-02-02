@@ -675,7 +675,7 @@
                 "tags": [
                     "Session"
                 ],
-                "description": "# Add a user to the session\n\nA user is identified by its **unique** username. The username for the user to be added to the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\n\n\n## Errors\nIf the username is invalid or an user with that username already exists in the session, a response will have the error code `400` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Add a user to the session\n\nA user is identified by its **unique** username. The username for the user to be added to the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\nThe user was successfully added. The response \nbody contains a representation for the user, including the cookie which is to be included in subsequent request. The cookie uniquely identifies the user. The status code is `201`.\n\n\n## Errors\nIf the username is invalid or an user with that username already exists in the session, a response will have the error code `400` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -698,15 +698,26 @@
                         "description": "",
                         "schema": {
                             "type": "object",
+                            "required": [
+                                "username",
+                                "cookie"
+                            ],
                             "properties": {
                                 "username": {
                                     "type": "string"
+                                },
+                                "cookie": {
+                                    "type": "string",
+                                    "minLength": 64,
+                                    "maxLength": 64,
+                                    "pattern": "^[a-f0-9]{64}$"
                                 }
                             }
                         },
                         "examples": {
                             "application/json": {
-                                "username": "quis elit in est"
+                                "username": "do in fugiat voluptate",
+                                "cookie": "42af7789da49710b1b57973b485d4643e89ced4b88f68ef9598ce2602796a64a"
                             }
                         }
                     },
@@ -804,7 +815,7 @@
                 "tags": [
                     "Session"
                 ],
-                "description": "# Remove a user from the session\n\nA user is identified by its **unique** username. The username for the user to be removed from the session is specified in the attribute `username` in the json object of the request body.\n\n## Success\n\n\n## Errors\nIf an user with that username does not exists in the session, a response will have the error code `404` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Remove a user from the session\n\nA user is identified by its **unique** username. The username for the user to be removed from the session is specified in the attribute `username` in the json object of the request body.\n\nOnly the administrator user can delete users from the session. Request requires administrator privileges. The administrator cookie is to be inccluded in the headers to authorize the request.\n\n## Success\nThe user was removed from the session. The respone has status code 200, and conitains a representation of the removed user.\n\n## Errors\nIf an user with that username does not exists in the session, a response will have the error code `404` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -820,6 +831,15 @@
                                 "username"
                             ]
                         }
+                    },
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
                     }
                 ],
                 "responses": {
@@ -871,7 +891,7 @@
                 "tags": [
                     "Session"
                 ],
-                "description": "# Create a new session\n\nCreate a new session with the given title.\nEach session must have an admin user. \n\nThe sessoin title and username for the admin is specified in the attributes `session_name` and `admin_username` in the json body of the request.\n\n## Errors\nOnly one session can be run on the device. If there already is a session the response will have status code `400` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Create a new session\n\nCreate a new session with the given title.\nEach session must have an admin user. \n\nThe session title and username for the admin is specified in the attributes `session_name` and `admin_username` in the json body of the request.\nThe length of the session and the maximum number of votes a user can use in each round are specified in the attributes `session_length` and `max_votes`.\n\n## Success\nThe session was successfully created. The response \nbody contains a representation for the session, including the admin cookie which is to be included in every request that requires admin privileges. The status code is `201`.\n\n## Errors\nOnly one session can be run on the device. If there already is a session the response will have status code `400` and an error message in the body.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -884,15 +904,27 @@
                                 },
                                 "admin_username": {
                                     "type": "string"
+                                },
+                                "max_votes": {
+                                    "type": "integer",
+                                    "minimum": 0
+                                },
+                                "session_length": {
+                                    "type": "integer",
+                                    "minimum": 0
                                 }
                             },
                             "required": [
                                 "session_name",
-                                "admin_username"
+                                "admin_username",
+                                "max_votes",
+                                "session_length"
                             ],
                             "example": {
-                                "session_name": "test",
-                                "admin_username": "admin"
+                                "session_name": "ad",
+                                "admin_username": "aliqua ut",
+                                "max_votes": 19572360,
+                                "session_length": 94595671
                             }
                         }
                     }
@@ -906,15 +938,49 @@
                                 "session_name": {
                                     "type": "string"
                                 },
-                                "admin_username": {
-                                    "type": "string"
+                                "admin_user": {
+                                    "type": "object",
+                                    "required": [
+                                        "username",
+                                        "cookie"
+                                    ],
+                                    "properties": {
+                                        "username": {
+                                            "type": "string"
+                                        },
+                                        "cookie": {
+                                            "type": "string",
+                                            "minLength": 64,
+                                            "maxLength": 64,
+                                            "pattern": "^[a-f0-9]{64}$"
+                                        }
+                                    }
+                                },
+                                "max_votes": {
+                                    "type": "integer",
+                                    "minimum": 0
+                                },
+                                "session_length": {
+                                    "type": "integer",
+                                    "minimum": 0
                                 }
-                            }
+                            },
+                            "required": [
+                                "session_name",
+                                "admin_user",
+                                "max_votes",
+                                "session_length"
+                            ]
                         },
                         "examples": {
                             "application/json": {
-                                "session_name": "Ut",
-                                "admin_username": "anim Ut veniam laboris incididunt"
+                                "session_name": "nostrud ad fugiat labore pariatur",
+                                "admin_user": {
+                                    "username": "consequat magna anim ad irure",
+                                    "cookie": "77f6ea44284d65194b98996635639fbf1574e51e055f8cf361543ff7aff86647"
+                                },
+                                "max_votes": 47681676,
+                                "session_length": 61685033
                             }
                         }
                     },
@@ -1008,6 +1074,17 @@
                     "Tracklist"
                 ],
                 "description": "# Get the currently playig track\n\n## Success\nWith a successful response the status code is `200`, and the uri of the currently playing track is returned in the response body with the key parameter \"uri\".\n\n## Error\nIf there is no track currently playing the response code is `404`, and the body contains an error message.  \n\nFor other errors (caused by the client) the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "parameters": [
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "",
@@ -1094,6 +1171,15 @@
                                 "uri": "qui"
                             }
                         }
+                    },
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
                     }
                 ],
                 "responses": {
@@ -1282,6 +1368,15 @@
                                 }
                             }
                         }
+                    },
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
                     }
                 ],
                 "responses": {
@@ -1425,6 +1520,17 @@
                     "Tracklist"
                 ],
                 "description": "# Get tracklist\nGet a list of tracks currently in the tracklist\n\n\n## Success\nWith a successfull request the response status code is `200`. A representation of the tracklist is returned in the response body. \n\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
+                "parameters": [
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "",
@@ -1646,6 +1752,15 @@
                         "in": "query",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
                     }
                 ],
                 "responses": {
@@ -1728,6 +1843,15 @@
                                 "uri"
                             ]
                         }
+                    },
+                    {
+                        "name": "X-KTD-Cookie",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "minLength": 64,
+                        "maxLength": 64,
+                        "pattern": "^[a-f0-9]{64}$"
                     }
                 ],
                 "responses": {
