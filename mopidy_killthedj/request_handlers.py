@@ -21,6 +21,7 @@ class Listener(CoreListener, pykka.ThreadingActor):
 listener = Listener()
 listener.start()
 
+
 class BaseHandler(tornado.web.RequestHandler):
     """
     Base class for for API endpoint request handlers.
@@ -363,7 +364,6 @@ class PlaybackHandler(BaseHandler):
 
 
 class VoteHandler(BaseHandler):
-
     def put(self):
         """
         Increment the vote count for a track by 1
@@ -480,11 +480,11 @@ class SearchHandler(BaseHandler):
                                                          uris=uris,
                                                          exact=exact
                                                          ).get()
-                search_result_json = json.loads(json.dumps(search_result, cls=ModelJSONEncoder))
-                if search_result_json:
-                    search_result_json = filter_search_result(search_result_json)
+                search_result_json = json.dumps(search_result, cls=ModelJSONEncoder)
+                #if search_result_json:
+                #    search_result_json = filter_search_result(json.loads(search_result_json))
                 self.set_status(201)
-                self.write(json.dumps(search_result_json))
+                self.write(search_result_json)
 
         except ValidationError as validation_err:
             self.set_status(400)
