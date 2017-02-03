@@ -17,6 +17,8 @@ class Listener(CoreListener, pykka.ThreadingActor):
         first_track = max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes'))
         services.play_song(first_track.track.uri)
         del services.session.tracklist.trackToPlay[first_track.track.uri]
+        for user in services.session.users.values():
+            user.votes_left = services.session.max_votes
 
 listener = Listener()
 listener.start()
@@ -138,6 +140,7 @@ class UsersHandler(BaseHandler):
         :return:
         """
         try:
+
             data = json.loads(self.request.body)
             self.set_status(201)
             services.join_session(data)
@@ -325,7 +328,7 @@ class TracklistHandler(BaseHandler):
 
 
 class PlaybackHandler(BaseHandler):
-    def get(self, function):
+    def get(self):
         """
         Get the uri of track currently playing
 
@@ -338,17 +341,13 @@ class PlaybackHandler(BaseHandler):
             # if cookie is none get_user_by_cookie raises an error
             user = services.get_user_by_cookie(cookie)
 
-            if function == "current":
-                current_track = self.core.playback.get_current_track().get()
-                if current_track:
-                    self.set_status(200)
-                    self.write({"uri": current_track.uri})
-                else:
-                    self.set_status(404)
-                    self.write({"error": "no track currently playing"})
+            current_track = self.core.playback.get_current_track().get()
+            if current_track:
+                self.set_status(200)
+                self.write(json.dumps(current_track, cls=ModelJSONEncoder))
             else:
                 self.set_status(404)
-                self.write({"error": "function: %s not supported" % function})
+                self.write({"error": "no track currently playing"})
 
         except (AttributeError,
                 SessionNotActiveError,
@@ -361,6 +360,22 @@ class PlaybackHandler(BaseHandler):
 
 
 class VoteHandler(BaseHandler):
+
+    def get(self):
+        try:
+            # Try to get the cookie, cookie is None if the cookie is not set
+            cookie = self.request.headers.get("X-KTD-Cookie")
+            # if cookie is none get_user_by_cookie raises an error
+            user = services.get_user_by_cookie(cookie)
+            self.write(json.dumps(user.votes_left))
+            self.set_status(200)
+
+        except (AttributeError,
+                SessionNotActiveError,
+                UserNotFoundError) as err:
+            self.set_status(400)
+            self.write({"error": err.message})
+
     def put(self):
         """
         Increment the vote count for a track by 1
@@ -373,12 +388,13 @@ class VoteHandler(BaseHandler):
             cookie = self.request.headers.get("X-KTD-Cookie")
             # if cookie is none get_user_by_cookie raises an error
             user = services.get_user_by_cookie(cookie)
-
-            data = json.loads(self.request.body)
-            track_uri = data["uri"]
-            #services.session.tracklist.increment_track_votes(track_uri)
-            #services.session.tracklist.update_tracklist()
-            services.session.tracklist.trackToPlay[track_uri].votes += 1
+            if user.votes_left > 0:
+                data = json.loads(self.request.body)
+                track_uri = data["uri"]
+                #services.session.tracklist.increment_track_votes(track_uri)
+                #services.session.tracklist.update_tracklist()
+                services.session.tracklist.trackToPlay[track_uri].votes += 1
+                user.votes_left -= 1
             self.write(json.dumps(track_uri))
             self.set_status(200)
 
@@ -478,10 +494,10 @@ class SearchHandler(BaseHandler):
                                                          exact=exact
                                                          ).get()
                 search_result_json = json.dumps(search_result, cls=ModelJSONEncoder)
-                #if search_result_json:
-                #    search_result_json = filter_search_result(json.loads(search_result_json))
+                if search_result_json:
+                    search_result_json = filter_search_result(json.loads(search_result_json))
                 self.set_status(201)
-                self.write(search_result_json)
+                self.write(json.dumps(search_result_json))
 
         except ValidationError as validation_err:
             self.set_status(400)
@@ -493,11 +509,13 @@ class SearchHandler(BaseHandler):
 
 def filter_search_result(search_result_json):
     filtered_result = []
-    for track in search_result_json[0]["tracks"]:
-        filtered_result.append({
-            "uri": track["uri"],
-            "name": track["name"],
-            "length": track["length"],
-            "artists": track["artists"]
-        })
+    if "tracks" in search_result_json[0]:
+        for track in search_result_json[0]["tracks"]:
+            filtered_result.append({
+                "uri": track["uri"],
+                "name": track["name"],
+                "length": track["length"],
+                "artists": track["artists"],
+                "present": track["uri"] in services.session.tracklist.trackToPlay
+            })
     return filtered_result
