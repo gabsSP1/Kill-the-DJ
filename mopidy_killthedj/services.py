@@ -42,7 +42,7 @@ class Services:
 
             admin_user = User(data['admin_username'], cookie, True)
             tracklist = Tracklist(core)
-            self.session = Session(admin_user, data['session_name'], tracklist)
+            self.session = Session(admin_user, data['session_name'], tracklist, data["max_votes"])
             self.session.add_user(admin_user)
             self.core = core
 

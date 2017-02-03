@@ -1,7 +1,7 @@
 
 
 class Session:
-    def __init__(self, admin_username, session_name, tracklist, max_votes=10):
+    def __init__(self, admin_username, session_name, tracklist, max_votes):
         self.users = dict()
         self.user_cookies = dict()
         self.admin_username = admin_username
@@ -14,6 +14,7 @@ class Session:
             raise Exception("user with username: %s already in session"
                                 % user.username)
         else:
+            user.votes_left = self.max_votes
             # Adding user to cookie and user dictionaries
             self.users[user.username] = user
             self.user_cookies[user.cookie] = user
