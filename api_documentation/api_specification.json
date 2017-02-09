@@ -3,7 +3,7 @@
     "info": {
         "version": "v1",
         "title": "Kill the DJ",
-        "description": "API for session and tracklist management in the Kill the DJ mopidy extension"
+        "description": "API for session and tracklist management in the Kill the DJ mopidy extension. \n\nThe interface makes requests to the local backend (http://localhost:6680). Mopidy must be installed and running, with the extension Mopidy-KillTheDJ."
     },
     "host": "localhost:6680",
     "basePath": "/killthedj",
@@ -119,6 +119,11 @@
                                     "type": "boolean"
                                 }
                             },
+                            "required": [
+                                "query",
+                                "uris",
+                                "exact"
+                            ],
                             "example": {
                                 "query": {
                                     "any": [
@@ -137,304 +142,66 @@
                     "201": {
                         "description": "",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "result": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "track": {
-                                                "type": "object",
-                                                "required": [
-                                                    "album",
-                                                    "__model__",
-                                                    "name",
-                                                    "uri",
-                                                    "length",
-                                                    "last_modified",
-                                                    "track_no",
-                                                    "artists"
-                                                ],
-                                                "properties": {
-                                                    "album": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "__model__",
-                                                            "name"
-                                                        ],
-                                                        "properties": {
-                                                            "__model__": {
-                                                                "type": "string"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    },
-                                                    "composers": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "__model__": {
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "__model__",
-                                                                "name"
-                                                            ]
-                                                        }
-                                                    },
-                                                    "__model__": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    },
-                                                    "performers": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "__model__": {
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "__model__",
-                                                                "name"
-                                                            ]
-                                                        }
-                                                    },
-                                                    "disc_no": {
-                                                        "type": "integer"
-                                                    },
-                                                    "uri": {
-                                                        "type": "string"
-                                                    },
-                                                    "comment": {
-                                                        "type": "string"
-                                                    },
-                                                    "date": {
-                                                        "type": "string"
-                                                    },
-                                                    "length": {
-                                                        "type": "integer"
-                                                    },
-                                                    "last_modified": {
-                                                        "type": "integer"
-                                                    },
-                                                    "track_no": {
-                                                        "type": "integer"
-                                                    },
-                                                    "artists": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "__model__": {
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "__model__",
-                                                                "name"
-                                                            ]
-                                                        }
-                                                    },
-                                                    "genre": {
-                                                        "type": "string"
-                                                    },
-                                                    "musicbrainz_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "bitrate": {
-                                                        "type": "integer"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "required": [
-                                            "track"
-                                        ]
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "uri": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "length": {
+                                        "type": "string"
+                                    },
+                                    "artists": {
+                                        "type": "string"
+                                    },
+                                    "present": {
+                                        "type": "boolean"
                                     }
-                                }
+                                },
+                                "required": [
+                                    "uri",
+                                    "name",
+                                    "length",
+                                    "artists",
+                                    "present"
+                                ]
                             }
                         },
                         "examples": {
-                            "application/json": {
-                                "result": [
-                                    {
-                                        "track": {
-                                            "album": {
-                                                "__model__": "in est ir",
-                                                "name": "aliquip velit dese"
-                                            },
-                                            "composers": [
-                                                {
-                                                    "__model__": "fugiat reprehenderit ex",
-                                                    "name": "pariatur do dolor ullamco"
-                                                },
-                                                {
-                                                    "__model__": "aute in",
-                                                    "name": "officia ipsum anim commodo"
-                                                },
-                                                {
-                                                    "__model__": "officia esse laboris ipsum",
-                                                    "name": "veniam sint nulla exercitation"
-                                                }
-                                            ],
-                                            "__model__": "elit",
-                                            "name": "cillum laborum in deserunt Duis",
-                                            "performers": [
-                                                {
-                                                    "__model__": "ullamco laboris",
-                                                    "name": "commodo dolore laboris id anim"
-                                                },
-                                                {
-                                                    "__model__": "Duis dolor",
-                                                    "name": "cupidatat consequat occaecat"
-                                                },
-                                                {
-                                                    "__model__": "mollit ut cillum incididunt",
-                                                    "name": "mollit Duis"
-                                                },
-                                                {
-                                                    "__model__": "dolore ut commodo",
-                                                    "name": "pariatur Excepteur "
-                                                }
-                                            ],
-                                            "disc_no": 88765901,
-                                            "uri": "fugiat enim ut Excepteur id",
-                                            "comment": "culpa",
-                                            "date": "fugiat dolo",
-                                            "length": 31000023,
-                                            "last_modified": -73172010,
-                                            "track_no": -72609450,
-                                            "artists": [
-                                                {
-                                                    "__model__": "qui voluptate",
-                                                    "name": "laborum non labore"
-                                                }
-                                            ],
-                                            "genre": "irure in voluptate sed ipsum",
-                                            "musicbrainz_id": "do ullamco veniam",
-                                            "bitrate": 71475157
-                                        }
-                                    },
-                                    {
-                                        "track": {
-                                            "album": {
-                                                "__model__": "amet",
-                                                "name": "aliquip cupidatat"
-                                            },
-                                            "composers": [
-                                                {
-                                                    "__model__": "Excepteur velit et",
-                                                    "name": "nulla"
-                                                }
-                                            ],
-                                            "__model__": "sunt veniam dolore qui",
-                                            "name": "in",
-                                            "performers": [
-                                                {
-                                                    "__model__": "irure",
-                                                    "name": "ut reprehenderit"
-                                                }
-                                            ],
-                                            "disc_no": -70645375,
-                                            "uri": "mo",
-                                            "comment": "dolor",
-                                            "date": "velit esse",
-                                            "length": -55733095,
-                                            "last_modified": -73913268,
-                                            "track_no": -5938887,
-                                            "artists": [
-                                                {
-                                                    "__model__": "minim voluptate ex culpa eu",
-                                                    "name": "dolo"
-                                                }
-                                            ],
-                                            "genre": "cillum occaecat ullamco consequat",
-                                            "musicbrainz_id": "exercitation minim amet Ut labore",
-                                            "bitrate": 53052794
-                                        }
-                                    },
-                                    {
-                                        "track": {
-                                            "album": {
-                                                "__model__": "u",
-                                                "name": "magna dolor exercitatio"
-                                            },
-                                            "composers": [
-                                                {
-                                                    "__model__": "ullamco ",
-                                                    "name": "reprehenderit est ad en"
-                                                },
-                                                {
-                                                    "__model__": "",
-                                                    "name": "aliqua sunt Excepteur quis"
-                                                },
-                                                {
-                                                    "__model__": "reprehenderit ex sed in",
-                                                    "name": "laboris eu Ut amet"
-                                                },
-                                                {
-                                                    "__model__": "labore ve",
-                                                    "name": "in nisi magna labore ullamco"
-                                                }
-                                            ],
-                                            "__model__": "esse ullamco",
-                                            "name": "incididunt ex consequat ut officia",
-                                            "performers": [
-                                                {
-                                                    "__model__": "exercitation velit Excepteur laboris",
-                                                    "name": "mollit commodo dolor tempor"
-                                                },
-                                                {
-                                                    "__model__": "adipisicing fugiat tempor",
-                                                    "name": "veli"
-                                                },
-                                                {
-                                                    "__model__": "reprehenderit voluptate qui",
-                                                    "name": "ullamco non Lorem"
-                                                }
-                                            ],
-                                            "disc_no": -99670002,
-                                            "uri": "nulla dolor culpa",
-                                            "comment": "dolore nisi sed culpa ullamco",
-                                            "date": "culpa exercitation sit ex Excepteur",
-                                            "length": 67198360,
-                                            "last_modified": -24481689,
-                                            "track_no": 8793664,
-                                            "artists": [
-                                                {
-                                                    "__model__": "ex eu fugiat",
-                                                    "name": "aute irure laborum est"
-                                                },
-                                                {
-                                                    "__model__": "sed",
-                                                    "name": "sed amet incididunt Duis"
-                                                }
-                                            ],
-                                            "genre": "veniam",
-                                            "musicbrainz_id": "amet deserunt ea in cu",
-                                            "bitrate": 99163758
-                                        }
-                                    }
-                                ]
-                            }
+                            "application/json": [
+                                {
+                                    "uri": "anim aliquip reprehenderit",
+                                    "name": "eu",
+                                    "length": "sunt ullamco esse",
+                                    "artists": "fugiat dolore ut",
+                                    "present": false
+                                },
+                                {
+                                    "uri": "quis",
+                                    "name": "in Lorem adipisicing pariatur eu",
+                                    "length": "eiusmod minim",
+                                    "artists": "commodo mini",
+                                    "present": true
+                                },
+                                {
+                                    "uri": "et",
+                                    "name": "culpa ad",
+                                    "length": "et",
+                                    "artists": "aliquip ex sed dolor Excepteur",
+                                    "present": true
+                                },
+                                {
+                                    "uri": "consequat cupidatat fugiat eu",
+                                    "name": "occaecat ut sunt culpa",
+                                    "length": "laboris",
+                                    "artists": "dolore Lorem aliquip",
+                                    "present": true
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -469,7 +236,7 @@
                 "tags": [
                     "Tracks"
                 ],
-                "description": "# Get information about a track\n\nGet information about a track by sending its ([mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) as a parameter in the json body, \nexample: \n```json\n{\n  \"uri\": \"spotify:track:1CBnhr9hudZ73rQTZ1RBHk\"\n}\n```\n\n## Success\nIf the track was found in the library the response status code is `200`. A representation of the track is returned in the response body.\n\n## Error\nIf the track was not found in the library the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
+                "description": "# Get information about a track\n\nGet information about a track by sending its [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) as a parameter in the json body, \nexample: \n```json\n{\n  \"uri\": \"spotify:track:1CBnhr9hudZ73rQTZ1RBHk\"\n}\n```\n\n## Success\nIf the track was found in the library the response status code is `200`. A representation of the track is returned in the response body.\n\n## Error\nIf the track was not found in the library the response status code is `404`, and the body contains an error message.  \n\nFor other errors the response status code is `400`, and the body contains an error message.  \n\nFor errors in the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
                         "name": "body",
@@ -751,6 +518,7 @@
                 "tags": [
                     "Session"
                 ],
+                "description": "# Get users\nGet a list of users currently in the session. \n\n## Success\nIf the request was successful the status code of the response is `200`, and the body contains a list of users.\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "responses": {
                     "200": {
                         "description": "",
@@ -1024,6 +792,7 @@
                 "tags": [
                     "Session"
                 ],
+                "description": "# Get session status\nGet the status of the session. The boolean value in the response body indicates if the session is active or not.\n\n## Success\nIf the request was successful the status code of the response is `200`, and the body contains the session status\n\n## Errors\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "responses": {
                     "200": {
                         "description": "",
@@ -1748,10 +1517,19 @@
                 "description": "# Decrease vote count\n\nDecrease the vote count for a track in the tracklist. The track for which to decrease the vote count is identified by the [mopidy uri](https://docs.mopidy.com/en/latest/api/backend/#uris-and-routing-of-requests-to-the-backend) given as a parameter in the json body.\n\nThe vote count is decreased by 1 for each request. The new votecount is return in the response. If the vote count is already 0 it is not decreased and an error response is returned. \n\nUsers in the session can get vote for tracks in the tracklist. Request requires user privileges. The cookie is to be included in the headers to authorize the request.\n\n## Success\nThe tracks vote count was decreased by 1. Status code of response is `200`, the current vote count is the attribute `vote_count` returned in the response body.\n\n## Errors\nIf the track is not in the tracklist the response status code is `404`. \n\nIf the vote count is already zero when the request is recieved the response will have status code `409` and an error message.  \n\nFor client errors the response status code is `400`, and the body contains an error message.  \n\nFor errors int the backend the response status code is `500`, and the body contains an error message.",
                 "parameters": [
                     {
-                        "name": "uri",
-                        "in": "query",
-                        "required": true,
-                        "type": "string"
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "uri": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "uri"
+                            ]
+                        }
                     },
                     {
                         "name": "X-KTD-Cookie",
