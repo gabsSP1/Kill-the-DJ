@@ -5,6 +5,8 @@ class User(object):
         self.cookie = cookie
         self.is_admin = is_admin
         self.votes_left = votes_left
+        self.banned = False
+        self.points = 0
 
     def decrement_votes(self):
         if self.votes_left > 0:

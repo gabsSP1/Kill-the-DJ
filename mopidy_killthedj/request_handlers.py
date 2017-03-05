@@ -7,6 +7,10 @@ from ktd_exceptions import SessionNotActiveError, UserNotFoundError
 
 services = Services()
 
+POINT_PROPOSED = 3
+POINT_PASSED = 20
+POINT_GET_VOTE = 2
+POINT_VOTE = 1
 
 class Listener(CoreListener, pykka.ThreadingActor):
 
@@ -15,6 +19,7 @@ class Listener(CoreListener, pykka.ThreadingActor):
 
     def track_playback_ended(self, tl_track, time_position):
         first_track = max(services.session.tracklist.trackToPlay.values(), key=attrgetter('votes'))
+        first_track.user.points += POINT_PASSED
         services.play_song(first_track.track.uri)
         del services.session.tracklist.trackToPlay[first_track.track.uri]
         for user in services.session.users.values():
@@ -166,11 +171,17 @@ class UsersHandler(BaseHandler):
         :return:
         """
         try:
+            cookie = self.request.headers.get("X-KTD-Cookie")
+            user = services.get_user_by_cookie(cookie)
             self.set_status(200)
             self.write(
-                json.dumps(services.get_all_users(), default=jdefault))
+                json.dumps(sorted(services.get_all_users(), key=attrgetter("points"), reverse=True), default=jdefault))
 
         except SessionNotActiveError as err:
+            self.set_status(400)
+            self.write({"error": err.message})
+
+        except UserNotFoundError as err:
             self.set_status(400)
             self.write({"error": err.message})
 
@@ -205,6 +216,10 @@ class UsersHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": err.message})
 
+        except UserNotFoundError as err:
+            self.set_status(400)
+            self.write({"error": err.message})
+
     def data_received(self, chunk):
         pass
 
@@ -226,7 +241,6 @@ class TracklistHandler(BaseHandler):
             # if cookie is none get_user_by_cookie raises an error
             user = services.get_user_by_cookie(cookie)
 
-            # tracklist = self.core.tracklist.get_tl_tracks().get()
 
             tracks = []
             for track in sorted(services.session.tracklist.trackToPlay.values(), key=attrgetter("votes"), reverse=True):
@@ -267,8 +281,10 @@ class TracklistHandler(BaseHandler):
             if tracks:
                 if self.core.playback.get_state().get() != "playing":
                     services.play_song(uri=tracks[0].uri)
+                    user.points += POINT_PROPOSED+POINT_PASSED
                 else:
-                    services.session.tracklist.add_track(tracks[0])
+                    user.points += POINT_PROPOSED
+                    services.session.tracklist.add_track(tracks[0], user)
                 self.set_status(201)
                 self.write(json.dumps(tracks[0], cls=ModelJSONEncoder))
             else:
@@ -391,9 +407,9 @@ class VoteHandler(BaseHandler):
             if user.votes_left > 0:
                 data = json.loads(self.request.body)
                 track_uri = data["uri"]
-                #services.session.tracklist.increment_track_votes(track_uri)
-                #services.session.tracklist.update_tracklist()
+                user.points += POINT_VOTE
                 services.session.tracklist.trackToPlay[track_uri].votes += 1
+                services.session.tracklist.trackToPlay[track_uri].user.points += POINT_GET_VOTE
                 user.votes_left -= 1
             self.write(json.dumps(track_uri))
             self.set_status(200)

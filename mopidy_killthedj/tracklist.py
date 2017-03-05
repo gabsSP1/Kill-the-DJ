@@ -1,6 +1,7 @@
 class TrackStructure(object):
-    def __init__(self, track):
+    def __init__(self, track, user):
         self.track = track
+        self.user = user
         self.votes = 0
 
 
@@ -13,12 +14,10 @@ class Tracklist(object):
         self.core = core
         self.core.tracklist.set_consume(True)
         self.trackToPlay = {}
-        self.trackPlayed = {}
-        self.trackHistory = []
 
-    def add_track(self, track):
+    def add_track(self, track, user):
         if track.uri not in self.trackToPlay:
-            track_structure = TrackStructure(track)
+            track_structure = TrackStructure(track, user)
             self.trackToPlay[track.uri] = track_structure
 
     def remove_track(self, track_uri):
