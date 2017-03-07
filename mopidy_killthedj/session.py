@@ -23,6 +23,8 @@ class Session:
         if username not in self.users:
             raise Exception("user with username: %s not in session"
                                 % username)
+        elif self.users[username].is_admin:
+            raise Exception("Impossible to ban the admin")
         else:
             # Deleting user from cookie and user dictionaries
             del self.user_cookies[self.users[username].cookie]

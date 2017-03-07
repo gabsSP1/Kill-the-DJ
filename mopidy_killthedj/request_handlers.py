@@ -185,20 +185,18 @@ class UsersHandler(BaseHandler):
             self.set_status(400)
             self.write({"error": err.message})
 
-    def delete(self):
-        """
-        Method for removing a USER from the session.
-        The USER to be removed from the session is specified by the username
-        in the request body. If the request was successful the representation
-        of the USER is returned in the response
 
-        If the session is not active or no USER with that username
-        is in the session, an error response is sent.
+    def data_received(self, chunk):
+        pass
 
-        Only the ADMINISTRATOR user can delete users from the session.
-        Request requires ADMINISTRATOR privileges.
-        :return:
-        """
+
+def jdefault(o):
+    return o.__dict__
+
+
+class DelUserHandler(BaseHandler):
+    def post(self):
+        print "yeAHHHHHHHHH"
         try:
             # Try to get the cookie, cookie is None if the cookie is not set
             cookie = self.request.headers.get("X-KTD-Cookie")
@@ -219,13 +217,6 @@ class UsersHandler(BaseHandler):
         except UserNotFoundError as err:
             self.set_status(400)
             self.write({"error": err.message})
-
-    def data_received(self, chunk):
-        pass
-
-
-def jdefault(o):
-    return o.__dict__
 
 
 class TracklistHandler(BaseHandler):

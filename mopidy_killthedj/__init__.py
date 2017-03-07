@@ -24,6 +24,7 @@ def ktd_api(config, core):
         (r'/tracklist/tracks', TracklistHandler, {'core': core}),
         (r'/tracklist/votes', VoteHandler, {'core': core}),
         (r'/tracklist/playback/', PlaybackHandler, {'core': core}),
+        (r'/delUser', DelUserHandler, {'core': core}),
     ]
 
 
